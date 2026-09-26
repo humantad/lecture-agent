@@ -330,9 +330,9 @@ async function ask(q){
   }catch(err){wait.firstChild.innerHTML=`<div class="notice">오류: ${esc(err.message)}</div>`;}
   $("#send").disabled=false; $("#q").focus();
 }
-function askFromAnalysis(text){ // 약점 CQ → 대화로
-  $("#tabs").querySelector('[data-t="chat"]').click();
-  ask(text);
+function askFromAnalysis(text){ // 약점 CQ·개념 → 옆의 아바타에게(대화 탭이 없는 공개 사이트에서도 동작)
+  if(avatar){ avatar.prefill(text); $("#avatar").scrollIntoView({block:"nearest"}); return; }
+  $("#tabs").querySelector('[data-t="chat"]')?.click(); ask(text);
 }
 
 // ---------- 개념지도 · 논증 ----------
@@ -448,7 +448,7 @@ function argHtml(a){
    <div data-part="hid">${a.hidden_premises.map(p=>`<div class="row hid"><span class="tag hid">숨은 전제</span>${esc(p)}</div>`).join("")}</div>
    <div data-part="con"><div class="row"><span class="tag con">∴</span><b>${esc(a.conclusion)}</b></div></div>
    <div data-part="anls" class="anls">${sc?`<div><b>도식</b> ${esc(sc.scheme_name)} <small class="src">(${(sc.confidence*100|0)}%)</small></div>
-     ${sc.critical_questions.map(q=>`<div class="cq ${q.status}">${esc(q.text)}${q.status==="weakness"?`<button data-q="${esc(`[${a.title}] 이 논증의 약점 — ${q.text}`)}">도우미에게 묻기</button>`:""}</div>`).join("")}`:'<span class="src">도식 분석 없음</span>'}
+     ${sc.critical_questions.map(q=>`<div class="cq ${q.status}">${esc(q.text)}${q.status==="weakness"?`<button data-q="${esc(`[${a.title}] 이 논증의 약점 — ${q.text}`)}">아바타에게 묻기</button>`:""}</div>`).join("")}`:'<span class="src">도식 분석 없음</span>'}
      ${pe?`<div class="bars">${bars}</div><div class="src">${esc(pe.rationale)}</div>`:""}</div></div>`;
 }
 // 개념 묶음 색(동시 등장 커뮤니티) — 밝은·어두운 화면 모두에서 구별되는 8색
