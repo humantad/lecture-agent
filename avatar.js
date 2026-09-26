@@ -1,66 +1,31 @@
-// 철학자 아바타 — 초상화를 닮게 양식화한 SVG + 브라우저 음성(Web Speech API, 무료) + 대화창.
+// 철학자 아바타 — 실제 초상화(퍼블릭 도메인) + 발화 시 입·머리 움직임 + 브라우저 음성(Web Speech API, 무료) + 대화창.
 // 원형: philo-agent frontend/src/components/Avatar.jsx · useSpeech.js · PersonaPanel.jsx(유휴 명언).
-// 실제 인물의 얼굴·목소리가 아니라 수업용 '연극적 매개'다.
+// 목소리는 브라우저 합성음이다(실제 인물의 목소리가 아님).
 (function () {
-  // ---------- 얼굴 ----------
-  // 데카르트: 프란스 할스 초상(1649) — 어깨까지 내려오는 짙은 갈색 머리(가운데 가르마), 가는 콧수염,
-  //           아랫입술 밑 작은 수염, 무거운 눈꺼풀, 긴 코, 검은 옷에 흰 네모 깃.
-  // 스피노자: 1665년경 초상 — 짙은 곱슬머리가 어깨까지, 가는 콧수염, 크고 검은 아몬드형 눈,
-  //           둥근 눈썹, 갸름한 얼굴, 검은 옷에 흰 깃.
+  // ---------- 얼굴: 초상화 ----------
+  // 데카르트: Frans Hals, 「René Descartes」(1649경) — Wikimedia Commons, Public domain
+  // 스피노자: 작자 미상, 「Baruch de Spinoza」(1665경) — Wikimedia Commons, Public domain
+  // w·h = 그림 크기(px), view = 얼굴을 중심으로 자르는 영역(x y 너비 높이), mouth = 입 위치(그림 좌표)
   const FACES = {
-    descartes: {
-      skin: "#e8c3a0", shade: "#d4a882", hair: "#3b2a1e", hairHi: "#56402e", coat: "#1f1d1c", collar: "#f3f1ea",
-      brow: "M64 88 Q76 81 90 86 M110 86 Q124 81 136 88", eyeRy: 3.2, lid: true, curls: false,
-      moustache: "M84 128 Q92 123 100 126 Q108 123 116 128 Q108 126 100 129 Q92 126 84 128 Z",
-      tuft: "M96 140 Q100 147 104 140 Z", faceRx: 34, faceRy: 44, voice: { pitch: 0.95, rate: 1.0 },
-    },
-    spinoza: {
-      skin: "#e6c09a", shade: "#cfa47c", hair: "#1d1612", hairHi: "#33261d", coat: "#181716", collar: "#f5f3ee",
-      brow: "M63 86 Q76 76 90 84 M110 84 Q124 76 137 86", eyeRy: 4.6, lid: false, curls: true,
-      moustache: "M86 127 Q93 124 99 126 M101 126 Q107 124 114 127", tuft: "",
-      faceRx: 32, faceRy: 43, voice: { pitch: 0.9, rate: 0.93 },
-    },
+    descartes: { img: "descartes.jpg", w: 500, h: 679, view: [118, 88, 270, 270], mouth: { cx: 262, cy: 281, rx: 17, ry: 4 },
+                 voice: { pitch: 0.95, rate: 1.0 }, credit: "Frans Hals, 1649경" },
+    spinoza:   { img: "spinoza.jpg",   w: 500, h: 581, view: [96, 56, 262, 262],  mouth: { cx: 234, cy: 214, rx: 15, ry: 3.6 },
+                 voice: { pitch: 0.9, rate: 0.93 }, credit: "작자 미상, 1665경" },
   };
-  const DEFAULT = { ...FACES.descartes, hair: "#777", hairHi: "#999", moustache: "", tuft: "" };
 
-  function curlsPath(side) { // 스피노자 곱슬머리: 원을 겹쳐 머리 테두리를 만든다
-    const pts = side === "L" ? [[62, 70], [54, 92], [50, 116], [52, 140], [58, 162], [66, 180]]
-                             : [[138, 70], [146, 92], [150, 116], [148, 140], [142, 162], [134, 180]];
-    return pts.map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="${15 - i * 0.6}"/>`).join("");
-  }
-
-  function svg(id) {
-    const f = FACES[id] || DEFAULT;
-    const hairBack = f.curls
-      ? `<g fill="${f.hair}"><ellipse cx="100" cy="92" rx="52" ry="50"/>${curlsPath("L")}${curlsPath("R")}</g>
-         <g fill="${f.hairHi}" opacity=".55">${[[70, 60], [88, 50], [112, 50], [130, 60]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="9"/>`).join("")}</g>`
-      : `<path d="M52 170 Q40 120 50 84 Q58 46 100 42 Q142 46 150 84 Q160 120 148 170 Q138 150 134 110 L66 110 Q62 150 52 170 Z" fill="${f.hair}"/>
-         <path d="M58 150 Q54 120 60 96 M142 150 Q146 120 140 96" stroke="${f.hairHi}" stroke-width="3" fill="none" opacity=".7"/>`;
-    const fringe = f.curls
-      ? `<path d="M70 82 Q78 58 100 56 Q122 58 130 82 Q118 70 100 70 Q82 70 70 82 Z" fill="${f.hair}"/>`
-      : `<path d="M66 92 Q70 58 100 54 Q130 58 134 92 Q122 68 100 64 Q80 66 66 92 Z" fill="${f.hair}"/>
-         <path d="M100 55 L100 66" stroke="${f.hairHi}" stroke-width="2"/>`;
-    const eye = (cx) => `<ellipse cx="${cx}" cy="98" rx="7.5" ry="${f.eyeRy + 1.6}" fill="#fbf7f2"/>
-      <circle cx="${cx}" cy="98.5" r="${f.eyeRy}" fill="#2b1f18"/><circle cx="${cx + 1.3}" cy="97" r="1.1" fill="#fff"/>
-      ${f.lid ? `<path d="M${cx - 8} 96 Q${cx} 91 ${cx + 8} 96" stroke="${f.shade}" stroke-width="3" fill="none"/>` : ""}`;
-    return `<svg viewBox="0 0 200 220" role="img" aria-label="${id}">
-      <circle cx="100" cy="110" r="100" fill="var(--av-bg)"/>
-      ${hairBack}
-      <path d="M28 220 Q36 176 100 170 Q164 176 172 220 Z" fill="${f.coat}"/>
-      <path d="M72 172 L128 172 L136 196 L100 204 L64 196 Z" fill="${f.collar}"/>
-      <path d="M100 176 L100 203" stroke="#d8d4ca" stroke-width="1.2"/>
-      <rect x="90" y="140" width="20" height="26" fill="${f.shade}"/>
-      <ellipse cx="100" cy="106" rx="${f.faceRx}" ry="${f.faceRy}" fill="${f.skin}"/>
-      <ellipse cx="${100 - f.faceRx + 2}" cy="104" rx="4" ry="8" fill="${f.shade}"/>
-      <ellipse cx="${100 + f.faceRx - 2}" cy="104" rx="4" ry="8" fill="${f.shade}"/>
-      ${fringe}
-      <path d="${f.brow}" stroke="#2a1d15" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-      <g class="av-eyes">${eye(80)}${eye(120)}</g>
-      <path d="M100 100 L95 120 Q100 124 105 120" stroke="${f.shade}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-      <path d="M86 138 Q100 132 114 138" stroke="#b07a60" stroke-width="1.4" fill="none" opacity=".4"/>
-      <g class="av-mouth"><ellipse cx="100" cy="134" rx="9" ry="3" fill="#7b3a33"/></g>
-      ${f.moustache ? `<path d="${f.moustache}" fill="${f.hair}" stroke="${f.hair}" stroke-width="1.4" stroke-linecap="round"/>` : ""}
-      ${f.tuft ? `<path d="${f.tuft}" fill="${f.hair}"/>` : ""}
+  function svg(id, base) {
+    const f = FACES[id];
+    if (!f) return `<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="100" fill="var(--av-bg)"/></svg>`;
+    const [x, y, w, h] = f.view, m = f.mouth, cid = `clip-${id}`;
+    return `<svg viewBox="${x} ${y} ${w} ${h}" role="img" aria-label="${id} 초상">
+      <defs><clipPath id="${cid}"><circle cx="${x + w / 2}" cy="${y + h / 2}" r="${w / 2}"/></clipPath></defs>
+      <g clip-path="url(#${cid})">
+        <g class="av-head">
+          <image href="${base}${f.img}" x="0" y="0" width="${f.w}" height="${f.h}"/>
+          <g class="av-mouth"><ellipse cx="${m.cx}" cy="${m.cy}" rx="${m.rx}" ry="${m.ry}" fill="#2a0f0b" opacity=".0"/></g>
+        </g>
+      </g>
+      <circle class="av-ring" cx="${x + w / 2}" cy="${y + h / 2}" r="${w / 2 - 2}" fill="none" stroke="var(--accent)" stroke-width="4" opacity="0"/>
     </svg>`;
   }
 
@@ -83,7 +48,7 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
   window.PhiloAvatar = function mount(root, opts) {
-    // opts: { api(path, init), askable: bool, name(id), quotesFor(id)→[...], section()→key|null }
+    // opts: { api(path, init), askable: bool, name(id), quotesFor(id)→[...], section()→key|null, portraitBase }
     let pid = null, history = [], voiceOn = false, speaking = false, busy = false, last = Date.now(), quotes = [];
     root.innerHTML = `
       <div class="av-stage"><div class="av-face" id="avFace"></div>
@@ -92,7 +57,7 @@
         <button class="mini" id="avVoice" title="목소리 켜기/끄기">🔈 목소리 끔</button></div>
       <div class="av-log" id="avLog"></div>
       <form class="av-form" id="avForm"><input id="avQ" maxlength="500" autocomplete="off"><button class="btn">묻기</button></form>
-      <p class="av-note">철학자 모습·목소리는 수업용으로 꾸민 것입니다. 답변은 수업 슬라이드에 근거합니다.</p>`;
+      <p class="av-note"><span id="avCredit"></span><br>목소리는 브라우저 합성음이고, 답변은 수업 슬라이드에 근거합니다.</p>`;
     const $ = (s) => root.querySelector(s);
 
     function setSpeaking(on) { speaking = on; $("#avFace").classList.toggle("speaking", on); }
@@ -101,7 +66,7 @@
       synth.cancel();
       const u = new SpeechSynthesisUtterance(speakable(text));
       const v = pickVoice(); if (v) u.voice = v;
-      u.lang = "ko-KR"; const p = (FACES[pid] || DEFAULT).voice; u.pitch = p.pitch; u.rate = p.rate;
+      u.lang = "ko-KR"; const p = (FACES[pid] || { voice: { pitch: 1, rate: 1 } }).voice; u.pitch = p.pitch; u.rate = p.rate;
       u.onstart = () => setSpeaking(true); u.onend = u.onerror = () => setSpeaking(false);
       synth.speak(u);
     }
@@ -146,10 +111,13 @@
     }, 4000);
 
     return {
+      ask(text) { $("#avQ").value = text; $("#avForm").requestSubmit(); },
+      prefill(text) { $("#avQ").value = text; $("#avQ").focus(); },
       setPhilosopher(id, era) {
         if (id === pid) return;
         pid = id; history = []; touch(); if (synth) synth.cancel(); setSpeaking(false);
-        $("#avFace").innerHTML = svg(id);
+        $("#avFace").innerHTML = svg(id, opts.portraitBase || "");
+        $("#avCredit").textContent = FACES[id] ? `초상: ${FACES[id].credit} · 퍼블릭 도메인(Wikimedia Commons)` : "";
         $("#avName").textContent = opts.name(id); $("#avEra").textContent = era || "";
         $("#avLog").innerHTML = `<div class="av-msg sys">${esc(opts.name(id))}에게 이 절의 내용을 물어보세요.${opts.askable ? "" : " (공개 사이트: 대화 서버 연결 전)"}</div>`;
         $("#avQ").placeholder = `${opts.name(id)}에게 질문하기`;

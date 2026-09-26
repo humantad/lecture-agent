@@ -7,3 +7,9 @@
 
 이 저장소는 자동 생성된 정적 사이트다. 원본은 비공개 저장소 philo-agent의
 `backend/src/course/export_static.py`로 만든다. 직접 수정하지 말 것.
+
+## 이미지 출처
+
+- 데카르트 초상: Frans Hals, 「René Descartes」(1649경) — Wikimedia Commons, 퍼블릭 도메인
+- 스피노자 초상: 작자 미상, 「Baruch de Spinoza」(1665경) — Wikimedia Commons, 퍼블릭 도메인
+- 슬라이드 그림: 「철학적 사유의 향연」 2026-2 강의 슬라이드
