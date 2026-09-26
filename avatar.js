@@ -248,8 +248,8 @@
         h += esc(r.answer).replace(/\n/g, "<br>");
         if (r.beyond) h += `<div class="beyond"><b>수업 범위 밖 보충</b>${esc(r.beyond)}</div>`;
         if (r.question_back) h += `<div class="qb">${esc(r.question_back)}</div>`;
-        if (r.prepared) h += `<div class="src">📘 수업 슬라이드로 미리 준비해 둔 답변</div>`;
-        if (r.sources?.length) h += `<div class="src">근거: ${r.sources.map((s) => `${s.week}주 ${esc(s.locator)}`).join(" · ")}</div>`;
+        if (r.prepared) h += `<div class="src">${esc(r.prepared_label || "📘 수업 슬라이드로 미리 준비해 둔 답변")}</div>`;
+        if (r.sources?.length) h += `<div class="src">근거: ${r.sources.map((s) => r.prepared_label ? esc(s.locator) : `${s.week}주 ${esc(s.locator)}`).join(" · ")}</div>`;
         wait.innerHTML = h;
         history.push({ role: "user", content: q }, { role: "assistant", content: [r.answer, r.question_back].filter(Boolean).join("\n") });
         history = history.slice(-10);
