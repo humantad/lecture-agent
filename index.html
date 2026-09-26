@@ -25,8 +25,9 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 "Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif}
-.app{display:grid;grid-template-columns:270px 1fr;height:100vh}
-aside{background:var(--panel);border-right:1px solid var(--line);padding:18px 14px;overflow:auto}
+.app{display:grid;grid-template-columns:270px 1fr;grid-template-rows:minmax(0,1fr);height:100vh;height:100dvh}
+main{min-height:0}
+#side{background:var(--panel);border-right:1px solid var(--line);padding:18px 14px;overflow:auto}
 h1{font-size:17px;margin:0 0 2px}
 .sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
 .label{font-size:12px;color:var(--muted);margin:14px 0 6px;font-weight:600}
@@ -104,7 +105,9 @@ textarea{flex:1;resize:none;height:48px;padding:11px 12px;border:1px solid var(-
 .anawrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;flex:1;min-height:0}
 .anawrap #ana{min-width:0}
 .anawrap .grid2{grid-template-columns:1fr}
-#avatar{border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0;padding:14px}
+#avatar{border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0;height:100%;overflow:hidden;padding:14px 14px 10px}
+.anawrap{height:100%;min-height:0;grid-template-rows:minmax(0,1fr)}
+.anawrap #ana{overflow:auto;height:100%}
 .av-stage{position:relative;display:flex;justify-content:center}
 .av-face{width:170px}
 .av-face svg{width:100%;height:auto;display:block}
@@ -123,11 +126,21 @@ textarea{flex:1;resize:none;height:48px;padding:11px 12px;border:1px solid var(-
 .av-msg.me{background:var(--me);margin-left:24px}
 .av-msg.bot{background:var(--bg);border:1px solid var(--line);margin-right:8px}
 .av-msg.sys{color:var(--muted);font-size:12.5px;padding:4px 2px}
-.av-form{display:flex;gap:6px;margin-top:8px}
+.av-form{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);background:var(--panel);flex-shrink:0}
+.av-face{flex-shrink:0}
+.av-head,.av-note{flex-shrink:0}
 .av-form input{flex:1;min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
 .av-form .btn{padding:0 14px}
 .av-note{color:var(--muted);font-size:11px;margin:6px 0 0}
-@media (max-width:1100px){.anawrap{grid-template-columns:1fr;overflow:auto}#avatar{border-left:0;border-top:1px solid var(--line)}}
+@media (max-width:1100px){
+  .anawrap{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;overflow:auto;padding-bottom:calc(66px + env(safe-area-inset-bottom))}
+  .anawrap #ana{height:auto;overflow:visible}
+  #avatar{height:auto;overflow:visible;border-left:0;border-top:1px solid var(--line)}
+  .av-face{width:130px}
+  .av-log{max-height:50vh}
+  /* 화면이 좁으면 입력창을 화면 맨 아래에 고정한다(개념지도·논증 탭이 열려 있을 때만 보임) */
+  .av-form{position:fixed;left:0;right:0;bottom:0;z-index:4;margin:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -4px 14px #0001}
+}
 
 .mini{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:5px;padding:0 6px;font:inherit;font-size:11px;cursor:pointer;opacity:.8}
 .mini.on{background:var(--ink);color:var(--panel);opacity:1}
@@ -149,8 +162,8 @@ table.cite td:last-child{white-space:nowrap;color:var(--muted);font-size:12px;wi
 @media (max-width:900px){.grid2{grid-template-columns:1fr} #graph{height:380px}}
 @media (max-width:760px){
   .app{grid-template-columns:1fr}
-  aside{display:none;position:fixed;inset:0 20% 0 0;z-index:5;box-shadow:0 0 30px #0005}
-  aside.open{display:block}
+  #side{display:none;position:fixed;inset:0 20% 0 0;z-index:5;box-shadow:0 0 30px #0005}
+  #side.open{display:block}
   .menu{display:inline-block;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px;margin:10px 16px 0;font:inherit}
 }
 </style>
@@ -310,7 +323,7 @@ function avatarFor(week){
   if(!window.PhiloAvatar) return;
   if(!avatar) avatar=PhiloAvatar($("#avatar"),{api,askable:!STATIC||!!window.PHILO_API_BASE,
     name:id=>phName(id)||id, section:()=>curKey&&curKey.includes("-s")?curKey:null, quotesFor:quotesOf});
-  const s=sections.find(x=>x.week===week); const id=s?.philosophers[0]; if(!id) return;
+  const id=course.weeks.find(w=>w.week===week)?.philosophers.find(p=>course.philosophers.find(x=>x.id===p)?.persona); if(!id) return;
   avatar.setPhilosopher(id,course.philosophers.find(p=>p.id===id)?.era);
 }
 async function quotesOf(id){ // 수업 슬라이드에 인용된 그 철학자의 문장(“…”)
