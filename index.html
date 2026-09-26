@@ -455,7 +455,7 @@ function argHtml(a){
 const GROUP_COLORS=["#2f6fdf","#e0712c","#2a9d6f","#c2417a","#8a5cd1","#b8912a","#1f9bb3","#6b7a3a"];
 const SIDE={descartes:"#2f6fdf",spinoza:"#e0712c",both:"#8a5cd1"};
 const SLIDES_BASE=window.PHILO_SLIDES||"/slides/";
-const nodeSize=s=>5+20*Math.pow(s||0,1.2);           // 중요도 → 반지름(5~25)
+const nodeSize=s=>7+30*Math.pow(s||0,1.2);           // 중요도 → 반지름(7~37)
 const fontSize=s=>12+9*(s||0);
 function graphFont(ink,s,bold){return {color:ink,size:fontSize(s),face:"Pretendard, Malgun Gothic, sans-serif",bold:bold?{color:ink}:undefined,
   strokeWidth:4,strokeColor:getComputedStyle(document.documentElement).getPropertyValue("--graph-bg").trim()||"#fff"};}
