@@ -10,6 +10,6 @@
 
 ## 이미지 출처
 
-- 데카르트 초상: Frans Hals, 「René Descartes」(1649경) — Wikimedia Commons, 퍼블릭 도메인
-- 스피노자 초상: 작자 미상, 「Baruch de Spinoza」(1665경) — Wikimedia Commons, 퍼블릭 도메인
+- 데카르트 아바타: Frans Hals, 「René Descartes」(1649경, 퍼블릭 도메인)를 보고 그린 그림
+- 스피노자 아바타: 작자 미상, 「Baruch de Spinoza」(1665경, 퍼블릭 도메인)를 보고 그린 그림
 - 슬라이드 그림: 「철학적 사유의 향연」 2026-2 강의 슬라이드
