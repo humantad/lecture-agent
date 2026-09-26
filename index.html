@@ -5,13 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>철학적 사유의 향연 · 학습 도우미</title>
 <script src="vendor/vis-network.min.js"></script>
+<script src="avatar.js"></script>
 <style>
 :root{
   --bg:#f6f5f2; --panel:#ffffff; --ink:#1f2328; --muted:#646b73; --line:#e3e0da;
   --accent:#3d5a80; --accent-ink:#ffffff; --me:#e8eef6;
   --warn-bg:#fff4dc; --warn-ink:#7a4b00; --warn-line:#f0c46a;
   --beyond-bg:#f3eefb; --beyond-line:#b9a3e0;
-  --weak:#c0392b; --hidden:#8e44ad; --graph-bg:#fbfaf8;
+  --weak:#c0392b; --hidden:#8e44ad; --graph-bg:#fbfaf8; --av-bg:#efe9df;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -19,7 +20,7 @@
     --accent:#7fa6d6; --accent-ink:#0f1318; --me:#253245;
     --warn-bg:#3a2d10; --warn-ink:#f5d38e; --warn-line:#8a6a22;
     --beyond-bg:#2a2436; --beyond-line:#6f5a99;
-    --weak:#ef7b6d; --hidden:#c39be0; --graph-bg:#1a1c20;
+    --weak:#ef7b6d; --hidden:#c39be0; --graph-bg:#1a1c20; --av-bg:#2b2e34;
   }
 }
 *{box-sizing:border-box}
@@ -99,6 +100,35 @@ textarea{flex:1;resize:none;height:48px;padding:11px 12px;border:1px solid var(-
 .hyp{font-size:13.5px;margin:6px 0;padding-left:8px;border-left:3px dotted var(--hidden)}
 .hyp small{color:var(--muted)}
 .empty{color:var(--muted);text-align:center;margin:10vh auto;max-width:520px}
+/* 철학자 아바타 (avatar.js) */
+.anawrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;flex:1;min-height:0}
+.anawrap #ana{min-width:0}
+.anawrap .grid2{grid-template-columns:1fr}
+#avatar{border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0;padding:14px}
+.av-stage{position:relative;display:flex;justify-content:center}
+.av-face{width:170px}
+.av-face svg{width:100%;height:auto;display:block}
+.av-eyes{animation:blink 5.5s infinite;transform-box:view-box;transform-origin:100px 98px}
+@keyframes blink{0%,95%,100%{transform:scaleY(1)}97%{transform:scaleY(.08)}}
+.av-face.speaking .av-mouth{animation:talk .17s infinite alternate;transform-box:view-box;transform-origin:100px 134px}
+@keyframes talk{from{transform:scaleY(.5)}to{transform:scaleY(2.7)}}
+.av-face.speaking svg{animation:nod 1.6s ease-in-out infinite}
+@keyframes nod{50%{transform:translateY(1.5px) rotate(.6deg)}}
+.av-bubble{position:absolute;top:4px;left:0;right:0;margin:auto;max-width:300px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 11px;font-size:13px;box-shadow:0 4px 14px #0002}
+.av-head{display:flex;align-items:center;gap:8px;margin:8px 0}
+.av-head b{font-size:16px}
+.av-era{color:var(--muted);font-size:12px;flex:1}
+.av-log{flex:1;overflow:auto;min-height:120px;font-size:14px}
+.av-msg{margin:6px 0;padding:8px 10px;border-radius:10px}
+.av-msg.me{background:var(--me);margin-left:24px}
+.av-msg.bot{background:var(--bg);border:1px solid var(--line);margin-right:8px}
+.av-msg.sys{color:var(--muted);font-size:12.5px;padding:4px 2px}
+.av-form{display:flex;gap:6px;margin-top:8px}
+.av-form input{flex:1;min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
+.av-form .btn{padding:0 14px}
+.av-note{color:var(--muted);font-size:11px;margin:6px 0 0}
+@media (max-width:1100px){.anawrap{grid-template-columns:1fr;overflow:auto}#avatar{border-left:0;border-top:1px solid var(--line)}}
+
 .mini{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:5px;padding:0 6px;font:inherit;font-size:11px;cursor:pointer;opacity:.8}
 .mini.on{background:var(--ink);color:var(--panel);opacity:1}
 .mini:disabled{cursor:default;opacity:.4}
@@ -155,17 +185,18 @@ table.cite td:last-child{white-space:nowrap;color:var(--muted);font-size:12px;wi
         <button class="btn" id="send">보내기</button>
       </form>
     </section>
-    <section class="view" id="v-ana"><div id="ana"></div></section>
+    <section class="view" id="v-ana"><div class="anawrap"><div id="ana"></div><aside id="avatar"></aside></div></section>
     <section class="view" id="v-src"><div id="srcs"></div></section>
   </main>
 </div>
-<script>window.PHILO_STATIC=true;</script>
+<script>window.PHILO_STATIC=true;window.PHILO_API_BASE="";</script>
 <script>
 const $=s=>document.querySelector(s);
 // 정적 사이트(GitHub Pages 등, export_static.py)에서는 /api/... 대신 data/*.json 을 읽는다. 대화·새 분석은 서버 전용.
 const STATIC=!!window.PHILO_STATIC;
 function api(path,opt){
   if(!STATIC) return fetch(path,opt);
+  if(path==="/api/ask"&&window.PHILO_API_BASE) return fetch(window.PHILO_API_BASE.replace(/\/$/,"")+path,opt);
   if(opt?.method==="POST") return Promise.resolve(new Response(JSON.stringify({detail:"공개 사이트에서는 사용할 수 없는 기능입니다."}),{status:403}));
   const m=path.match(/^\/api\/(course|sections|sources|conceptmap\/[\w-]+|analysis\/[\w-]+)$/);
   return m?fetch(`data/${m[1]}.json`):Promise.resolve(new Response("{}",{status:404}));
@@ -274,8 +305,24 @@ function renderSecs(){
   $("#secs").innerHTML=html;
   $("#secs").querySelectorAll(".ph").forEach(b=>b.onclick=()=>{openUnit(b.dataset.k);$("#side").classList.remove("open");});
 }
+let avatar=null;
+function avatarFor(week){
+  if(!window.PhiloAvatar) return;
+  if(!avatar) avatar=PhiloAvatar($("#avatar"),{api,askable:!STATIC||!!window.PHILO_API_BASE,
+    name:id=>phName(id)||id, section:()=>curKey&&curKey.includes("-s")?curKey:null, quotesFor:quotesOf});
+  const s=sections.find(x=>x.week===week); const id=s?.philosophers[0]; if(!id) return;
+  avatar.setPhilosopher(id,course.philosophers.find(p=>p.id===id)?.era);
+}
+async function quotesOf(id){ // 수업 슬라이드에 인용된 그 철학자의 문장(“…”)
+  if(!srcData) srcData=await (await api("/api/sources")).json();
+  const a=srcData.authors.find(x=>x.id===id); if(!a) return [];
+  const out=new Set();
+  a.works.forEach(w=>w.citations.forEach(c=>c.places.forEach(p=>{const m=p.statement.match(/“([^”]{8,140})”?/); if(m) out.add(m[1].trim());})));
+  return [...out];
+}
 async function openUnit(key){
   curKey=key; renderSecs();
+  avatarFor(+key.slice(1,3));
   $("#ana").innerHTML=`<div class="empty">불러오는 중…</div>`;
   const cm=await (await api(`/api/conceptmap/${key}`)).json();
   const isSec=key.includes("-s");
