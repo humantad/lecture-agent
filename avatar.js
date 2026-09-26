@@ -192,17 +192,17 @@
       const face = $("#avFace"), open = face.querySelector(".av-open"), jaw = face.querySelector(".av-jaw"), teeth = face.querySelector(".av-teeth");
       if (speaking) {
         if (ts > nextSyl) { // 다음 음절: 90~190ms마다 0.25~1.0, 가끔 짧게 다문다
-          mouthT = Math.random() < 0.14 ? 0.05 : 0.25 + Math.random() * 0.75;
+          mouthT = Math.random() < 0.14 ? 0.05 : 0.2 + Math.random() * 0.5;
           nextSyl = ts + 90 + Math.random() * 100;
         }
       } else mouthT = 0;
       mouthO += (mouthT - mouthO) * (mouthT > mouthO ? 0.45 : 0.28);
       if (open) {
         const o = mouthO;
-        open.setAttribute("ry", (0.5 + o * 2.3).toFixed(2)); // 입안은 윗입술 아래 ~ 내려간 아랫입술 위까지만
-        open.setAttribute("cy", (Number(open.dataset.cy ||= open.getAttribute("cy")) - 0.4 + o * 1.7).toFixed(2));
-        teeth.setAttribute("opacity", Math.max(0, o * 1.1 - 0.35).toFixed(2));
-        jaw.setAttribute("transform", `translate(0 ${(o * 3.4).toFixed(2)})`);
+        open.setAttribute("ry", (0.5 + o * 1.1).toFixed(2)); // 입안은 윗입술 아래 ~ 내려간 아랫입술 위까지만
+        open.setAttribute("cy", (Number(open.dataset.cy ||= open.getAttribute("cy")) - 0.4 + o * 0.8).toFixed(2));
+        teeth.setAttribute("opacity", Math.max(0, o * 0.6 - 0.3).toFixed(2));
+        jaw.setAttribute("transform", `translate(0 ${(o * 1.5).toFixed(2)})`);
       }
       raf = (speaking || mouthO > 0.01) ? requestAnimationFrame(mouthLoop) : 0;
     }
@@ -210,7 +210,7 @@
       speaking = on; $("#avFace").classList.toggle("speaking", on);
       if (on && !raf) raf = requestAnimationFrame(mouthLoop);
     }
-    function pulse() { mouthT = 0.8 + Math.random() * 0.2; nextSyl = performance.now() + 120; } // 낱말 경계
+    function pulse() { mouthT = 0.55 + Math.random() * 0.15; nextSyl = performance.now() + 120; } // 낱말 경계
     function thinking(on) { $("#avFace").classList.toggle("thinking", on); }
     function say(text) {
       if (!voiceOn || !synth || !text) return;
