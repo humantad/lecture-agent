@@ -164,11 +164,9 @@ textarea{flex:1;resize:none;height:48px;padding:11px 12px;border:1px solid var(-
 /* 아바타: 눈 깜빡임 · 말할 때 입 벌림 · 머리 끄덕임 · 테두리 */
 .av-lids ellipse{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);animation:blink3 5.5s infinite}
 @keyframes blink3{0%,94%,100%{transform:scaleY(0)}96.5%{transform:scaleY(1)}}
-.av-face.speaking .av-open{animation:talk3 .15s infinite alternate;transform-box:fill-box;transform-origin:center}
-@keyframes talk3{from{transform:scaleY(.6)}to{transform:scaleY(4.2)}}
 .av-face.speaking .av-head{animation:bob 1.8s ease-in-out infinite;transform-box:view-box;transform-origin:50% 90%}
 @keyframes bob{50%{transform:rotate(.8deg) translateY(1.5px)}}
-.av-face.speaking .av-ring{animation:ring 1s ease-in-out infinite}
+.av-face.speaking .av-ring,.av-face.thinking .av-ring{animation:ring 1s ease-in-out infinite}
 @keyframes ring{50%{opacity:.8}}
 @media (max-width:1100px){#cpanel{position:fixed;inset:0;width:auto;z-index:8}.cp-cmp{grid-template-columns:1fr}}
 @media (max-width:1100px){

@@ -127,14 +127,17 @@
         ${f.nostrils.map(([x, yy]) => `<ellipse cx="${x}" cy="${yy}" rx="2.2" ry="1.3" fill="#3a221a" opacity=".7"/>`).join("")}
         <path d="M97 144 C98 147 102 147 103 144" stroke="${s3}" stroke-width="1" fill="none" opacity=".5"/>
         <g class="av-mouth">
+          <ellipse class="av-open" cx="100" cy="${y + 1}" rx="${hw - 2}" ry="0.6" fill="#2a0c09"/>
+          <ellipse class="av-teeth" cx="100" cy="${y + 0.6}" rx="${hw - 4.5}" ry="1.3" fill="#e3d6c3" opacity="0"/>
           <path d="M${100 - hw} ${y} C${100 - hw / 2} ${y - 2.6} ${100 + hw / 2} ${y - 2.6 - sm} ${100 + hw} ${y - sm} C${100 + hw / 2} ${y + 0.6} ${100 - hw / 2} ${y + 0.6} ${100 - hw} ${y} Z" fill="${L.upper}"/>
-          <path d="M${100 - hw + 1.5} ${y + 0.8} C${100 - hw / 2} ${y + 5.2} ${100 + hw / 2} ${y + 5.2} ${100 + hw - 1.5} ${y + 0.8 - sm / 2} C${100 + hw / 2} ${y + 1.8} ${100 - hw / 2} ${y + 1.8} ${100 - hw + 1.5} ${y + 0.8} Z" fill="${L.lower}"/>
-          <ellipse class="av-open" cx="100" cy="${y + 1}" rx="${hw - 2.5}" ry="0.9" fill="#3b120e"/>
-          <path d="M${100 - hw / 2} ${y + 3} C${100 - 2} ${y + 3.8} ${100 + 2} ${y + 3.8} ${100 + hw / 2} ${y + 3}" stroke="#fff" stroke-width=".8" opacity=".25" fill="none"/>
+          <g class="av-jaw">
+            <path d="M${100 - hw + 1.5} ${y + 0.8} C${100 - hw / 2} ${y + 5.2} ${100 + hw / 2} ${y + 5.2} ${100 + hw - 1.5} ${y + 0.8 - sm / 2} C${100 + hw / 2} ${y + 1.8} ${100 - hw / 2} ${y + 1.8} ${100 - hw + 1.5} ${y + 0.8} Z" fill="${L.lower}"/>
+            <path d="M${100 - hw / 2} ${y + 3} C${100 - 2} ${y + 3.8} ${100 + 2} ${y + 3.8} ${100 + hw / 2} ${y + 3}" stroke="#fff" stroke-width=".8" opacity=".25" fill="none"/>
+            ${f.tuft ? `<path d="${f.tuft}" fill="${h1}"/>` : ""}
+          </g>
         </g>
         ${f.moustache.endsWith("Z") ? `<path d="${f.moustache}" fill="${h1}"/>` : `<path d="${f.moustache}" stroke="${h1}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`}
         ${f.moustacheEnds.map((d) => `<path d="${d}" stroke="${h1}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`).join("")}
-        ${f.tuft ? `<path d="${f.tuft}" fill="${h1}"/>` : ""}
       </g>
       </g>
       <circle class="av-ring" cx="100" cy="120" r="98" fill="none" stroke="var(--accent)" stroke-width="3" opacity="0"/>
@@ -172,7 +175,32 @@
       <p class="av-note"><span id="avCredit"></span><br>목소리는 브라우저 합성음이고, 답변은 수업 슬라이드에 근거합니다.</p>`;
     const $ = (s) => root.querySelector(s);
 
-    function setSpeaking(on) { speaking = on; $("#avFace").classList.toggle("speaking", on); }
+    // ---------- 입 움직임: 음절처럼 불규칙하게 열고 부드럽게 닫는다 ----------
+    let mouthO = 0, mouthT = 0, nextSyl = 0, raf = 0;
+    function mouthLoop(ts) {
+      const face = $("#avFace"), open = face.querySelector(".av-open"), jaw = face.querySelector(".av-jaw"), teeth = face.querySelector(".av-teeth");
+      if (speaking) {
+        if (ts > nextSyl) { // 다음 음절: 90~190ms마다 0.25~1.0, 가끔 짧게 다문다
+          mouthT = Math.random() < 0.14 ? 0.05 : 0.25 + Math.random() * 0.75;
+          nextSyl = ts + 90 + Math.random() * 100;
+        }
+      } else mouthT = 0;
+      mouthO += (mouthT - mouthO) * (mouthT > mouthO ? 0.45 : 0.28);
+      if (open) {
+        const o = mouthO;
+        open.setAttribute("ry", (0.5 + o * 2.3).toFixed(2)); // 입안은 윗입술 아래 ~ 내려간 아랫입술 위까지만
+        open.setAttribute("cy", (Number(open.dataset.cy ||= open.getAttribute("cy")) - 0.4 + o * 1.7).toFixed(2));
+        teeth.setAttribute("opacity", Math.max(0, o * 1.1 - 0.35).toFixed(2));
+        jaw.setAttribute("transform", `translate(0 ${(o * 3.4).toFixed(2)})`);
+      }
+      raf = (speaking || mouthO > 0.01) ? requestAnimationFrame(mouthLoop) : 0;
+    }
+    function setSpeaking(on) {
+      speaking = on; $("#avFace").classList.toggle("speaking", on);
+      if (on && !raf) raf = requestAnimationFrame(mouthLoop);
+    }
+    function pulse() { mouthT = 0.8 + Math.random() * 0.2; nextSyl = performance.now() + 120; } // 낱말 경계
+    function thinking(on) { $("#avFace").classList.toggle("thinking", on); }
     function say(text) {
       if (!voiceOn || !synth || !text) return;
       synth.cancel();
@@ -180,6 +208,7 @@
       const v = pickVoice(); if (v) u.voice = v;
       u.lang = "ko-KR"; const p = (FACES[pid] || { voice: { pitch: 1, rate: 1 } }).voice; u.pitch = p.pitch; u.rate = p.rate;
       u.onstart = () => setSpeaking(true); u.onend = u.onerror = () => setSpeaking(false);
+      u.onboundary = (e) => { if (e.name === "word") pulse(); };
       synth.speak(u);
     }
     function bubble(text) { const b = $("#avBubble"); b.hidden = !text; b.textContent = text || ""; }
@@ -197,7 +226,7 @@
       e.preventDefault(); const q = $("#avQ").value.trim(); if (!q || busy) return;
       touch(); $("#avQ").value = ""; add(esc(q), "me");
       if (!opts.askable) { add("공개 사이트에서는 아직 대화 서버가 연결되지 않았습니다. 수업 중에 연결되면 질문할 수 있습니다.", "sys"); return; }
-      busy = true; const wait = add("…", "bot"); setSpeaking(true);
+      busy = true; const wait = add("…", "bot"); thinking(true);
       try {
         const res = await opts.api("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question: q, philosopher: pid, mode: "persona", history, section: opts.section() }) });
@@ -210,8 +239,8 @@
         wait.innerHTML = h;
         history.push({ role: "user", content: q }, { role: "assistant", content: [r.answer, r.question_back].filter(Boolean).join("\n") });
         history = history.slice(-10);
-        setSpeaking(false); say([r.notice, r.answer, r.question_back].filter(Boolean).join(" "));
-      } catch (err) { wait.innerHTML = `<div class="notice">오류: ${esc(err.message)}</div>`; setSpeaking(false); }
+        thinking(false); say([r.notice, r.answer, r.question_back].filter(Boolean).join(" "));
+      } catch (err) { wait.innerHTML = `<div class="notice">오류: ${esc(err.message)}</div>`; thinking(false); }
       busy = false; touch();
     };
 
