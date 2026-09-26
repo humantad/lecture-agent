@@ -162,6 +162,17 @@
   const IDLE_MS = 25000;
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
+  // 수업 입장 코드(공개 사이트 대화용) — 한 번 물어 이 브라우저에 기억한다
+  function classCode(reset) {
+    let c = "";
+    try { c = reset ? "" : localStorage.getItem("philo-class-code") || ""; } catch (e) { /* 저장소를 못 쓰면 매번 묻는다 */ }
+    if (!c) {
+      c = (window.prompt("수업 시간에 안내받은 입장 코드를 입력하세요") || "").trim();
+      try { localStorage.setItem("philo-class-code", c); } catch (e) { /* 무시 */ }
+    }
+    return c;
+  }
+
   window.PhiloAvatar = function mount(root, opts) {
     // opts: { api(path, init), askable: bool, name(id), quotesFor(id)→[...], section()→key|null, portraitBase }
     let pid = null, history = [], voiceOn = false, speaking = false, busy = false, last = Date.now(), quotes = [];
@@ -172,7 +183,7 @@
         <button class="mini" id="avVoice" title="목소리 켜기/끄기">🔈 목소리 끔</button></div>
       <div class="av-log" id="avLog"></div>
       <form class="av-form" id="avForm"><input id="avQ" maxlength="500" autocomplete="off"><button class="btn">묻기</button></form>
-      <p class="av-note"><span id="avCredit"></span><br>목소리는 브라우저 합성음이고, 답변은 수업 슬라이드에 근거합니다.</p>`;
+      <span id="avCredit" hidden></span>`;
     const $ = (s) => root.querySelector(s);
 
     // ---------- 입 움직임: 음절처럼 불규칙하게 열고 부드럽게 닫는다 ----------
@@ -228,8 +239,10 @@
       if (!opts.askable) { add("공개 사이트에서는 아직 대화 서버가 연결되지 않았습니다. 수업 중에 연결되면 질문할 수 있습니다.", "sys"); return; }
       busy = true; const wait = add("…", "bot"); thinking(true);
       try {
-        const res = await opts.api("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: q, philosopher: pid, mode: "persona", history, section: opts.section() }) });
+        const send = () => opts.api("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: q, philosopher: pid, mode: "persona", history, section: opts.section(), code: classCode() }) });
+        let res = await send();
+        if (res.status === 401) { classCode(true); res = await send(); } // 입장 코드가 틀리면 한 번 다시 묻는다
         const r = await res.json(); if (!res.ok) throw new Error(r.detail || res.status);
         let h = r.notice ? `<div class="notice">${esc(r.notice)}</div>` : "";
         h += esc(r.answer).replace(/\n/g, "<br>");
