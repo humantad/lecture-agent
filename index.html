@@ -252,6 +252,11 @@ function api(path,opt){
   const m=path.match(/^\/api\/(course|sections|sources|conceptmap\/[\w-]+|analysis\/[\w-]+)$/);
   return m?fetch(`data/${m[1]}.json`):Promise.resolve(new Response("{}",{status:404}));
 }
+// 이용 통계(공개 사이트에서만): 브라우저가 만든 무작위 ID + 방문·탭 기록. 이름·질문 내용은 보내지 않는다.
+window.philoVid=()=>{try{let v=localStorage.getItem("philo-vid");if(!v){v=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem("philo-vid",v);}return v;}catch(e){return "";}};
+function hit(tab,first){ if(!window.PHILO_API_BASE) return;
+  fetch(window.PHILO_API_BASE.replace(/\/$/,"")+"/api/hit",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({vid:philoVid(),tab,first}),keepalive:true}).catch(()=>{}); }
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const para=s=>esc(s).split(/\n{2,}/).map(p=>`<p style="margin:0 0 8px">${p.replace(/\n/g,"<br>")}</p>`).join("");
 let course=null, mode="tutor", ph=null, history=[], tab="chat", sections=[], canAnalyze=false, curKey=null, network=null;
@@ -284,7 +289,7 @@ $("#tabs").onclick=e=>{const t=e.target.dataset.t;if(!t)return;tab=t;
   $("#tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
   ["chat","ana","src"].forEach(v=>$("#v-"+v).classList.toggle("on",t===v));
   $("#chatSide").hidden=t!=="chat";$("#anaSide").hidden=t!=="ana";
-  renderPhs(); if(t==="ana") loadSections(); if(t==="src") loadSources();};
+  renderPhs(); hit(t,false); if(t==="ana") loadSections(); if(t==="src") loadSources();};
 $("#menu").onclick=()=>$("#side").classList.toggle("open");
 
 // ---------- 대화 ----------
@@ -607,7 +612,7 @@ function renderSources(){
 api("/api/course").then(r=>r.json()).then(c=>{
   course=c; ph=c.philosophers.find(p=>p.persona)?.id||null; $("#ctitle").textContent=c.title; $("#csub").textContent=`${c.semester} · 학습 도우미 · 이번 학기 슬라이드 기반`;
   $("#llm").textContent=STATIC?"":c.llm?"":"⚠ LLM 미연결 — 자료 검색과 저장된 분석만 동작";
-  renderPhs(); welcome();
+  renderPhs(); welcome(); hit(location.hash.slice(1).split("/")[0]||"ana",true);
   if(STATIC){ $("#tabs").querySelector('[data-t="chat"]').remove(); if(!location.hash) location.hash="ana"; }
   const [t,k]=location.hash.slice(1).split("/"); if(["ana","src"].includes(t)){ if(k) curKey=k; $("#tabs").querySelector(`[data-t="${t}"]`).click(); if(k) openUnit(k); }
 });

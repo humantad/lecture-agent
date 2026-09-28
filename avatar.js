@@ -240,7 +240,7 @@
       busy = true; const wait = add("…", "bot"); thinking(true);
       try {
         const send = () => opts.api("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: q, philosopher: pid, mode: "persona", history, section: opts.section(), code: classCode() }) });
+          body: JSON.stringify({ question: q, philosopher: pid, mode: "persona", history, section: opts.section(), code: classCode(), vid: window.philoVid ? window.philoVid() : "" }) });
         let res = await send();
         if (res.status === 401) { classCode(true); res = await send(); } // 입장 코드가 틀리면 한 번 다시 묻는다
         const r = await res.json(); if (!res.ok) throw new Error(r.detail || res.status);
