@@ -222,6 +222,23 @@
       u.onboundary = (e) => { if (e.name === "word") pulse(); };
       synth.speak(u);
     }
+    function wireRating(box) {
+      if (!box) return;
+      const btns = [...box.querySelectorAll("button")], msg = box.querySelector(".rate-msg");
+      const paint = (n, cls) => btns.forEach((b, i) => b.classList.toggle(cls, i < n));
+      btns.forEach((b) => {
+        b.onmouseenter = () => paint(+b.dataset.s, "hov");
+        b.onclick = async () => {
+          const s = +b.dataset.s; paint(s, "on"); msg.textContent = "저장 중…";
+          try {
+            const res = await fetch(window.PHILO_API_BASE.replace(/\/$/, "") + "/api/rate", { method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ rid: box.dataset.rid, stars: s, vid: window.philoVid ? window.philoVid() : "" }) });
+            msg.textContent = res.ok ? `별 ${s}개 저장됨` : "저장하지 못했습니다";
+          } catch (e) { msg.textContent = "저장하지 못했습니다"; }
+        };
+      });
+      box.onmouseleave = () => paint(0, "hov");
+    }
     function bubble(text) { const b = $("#avBubble"); b.hidden = !text; b.textContent = text || ""; }
     function add(html, cls) { const d = document.createElement("div"); d.className = "av-msg " + cls; d.innerHTML = html; $("#avLog").append(d); d.scrollIntoView({ block: "end" }); return d; }
     function touch() { last = Date.now(); bubble(""); }
@@ -250,7 +267,11 @@
         if (r.question_back) h += `<div class="qb">${esc(r.question_back)}</div>`;
         if (r.prepared) h += `<div class="src">${esc(r.prepared_label || "📘 수업 슬라이드로 미리 준비해 둔 답변")}</div>`;
         if (r.sources?.length) h += `<div class="src">근거: ${r.sources.map((s) => r.prepared_label ? esc(s.locator) : `${s.week}주 ${esc(s.locator)}`).join(" · ")}</div>`;
+        if (r.rid && window.PHILO_API_BASE) // 만족도: 별 5개 중 원하는 곳을 누르면 바로 저장(다시 누르면 고침)
+          h += `<div class="rate" data-rid="${esc(r.rid)}"><span class="rate-l">이 답변은 어땠나요?</span>${[1, 2, 3, 4, 5].map((i) => `<button type="button" data-s="${i}" aria-label="별 ${i}개">★</button>`).join("")}<span class="rate-msg"></span></div>`;
         wait.innerHTML = h;
+        wireRating(wait.querySelector(".rate"));
+        if (window.refreshCounts) window.refreshCounts();
         history.push({ role: "user", content: q }, { role: "assistant", content: [r.answer, r.question_back].filter(Boolean).join("\n") });
         history = history.slice(-10);
         thinking(false); say([r.notice, r.answer, r.question_back].filter(Boolean).join(" "));
