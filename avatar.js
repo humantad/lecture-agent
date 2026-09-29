@@ -266,11 +266,14 @@
         if (r.beyond) h += `<div class="beyond"><b>수업 범위 밖 보충</b>${esc(r.beyond)}</div>`;
         if (r.question_back) h += `<div class="qb">${esc(r.question_back)}</div>`;
         if (r.prepared) h += `<div class="src">${esc(r.prepared_label || "📘 수업 슬라이드로 미리 준비해 둔 답변")}</div>`;
+        if (r.slides?.length) // 슬라이드 번호로 물은 경우: 그 슬라이드를 바로 보여 준다(누르면 크게)
+          h += `<div class="av-slides">${r.slides.map((s) => `<figure data-img="${esc(s.img)}" title="눌러서 크게 보기"><img loading="lazy" src="${esc((window.PHILO_SLIDES || "/slides/") + s.img)}" alt=""><figcaption>${s.week}주 · 슬라이드 ${s.n} · ${esc(s.title)}</figcaption></figure>`).join("")}</div>`;
         if (r.sources?.length) h += `<div class="src">근거: ${r.sources.map((s) => r.prepared_label ? esc(s.locator) : `${s.week}주 ${esc(s.locator)}`).join(" · ")}</div>`;
         if (r.rid && window.PHILO_API_BASE) // 만족도: 별 5개 중 원하는 곳을 누르면 바로 저장(다시 누르면 고침)
           h += `<div class="rate" data-rid="${esc(r.rid)}"><span class="rate-l">이 답변은 어땠나요?</span>${[1, 2, 3, 4, 5].map((i) => `<button type="button" data-s="${i}" aria-label="별 ${i}개">★</button>`).join("")}<span class="rate-msg"></span></div>`;
         wait.innerHTML = h;
         wireRating(wait.querySelector(".rate"));
+        wait.querySelectorAll(".av-slides [data-img]").forEach((f) => { f.onclick = () => window.lightbox && window.lightbox(f.dataset.img); });
         if (window.refreshCounts) window.refreshCounts();
         history.push({ role: "user", content: q }, { role: "assistant", content: [r.answer, r.question_back].filter(Boolean).join("\n") });
         history = history.slice(-10);
