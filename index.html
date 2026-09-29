@@ -249,7 +249,7 @@ table.cite td:last-child{white-space:nowrap;color:var(--muted);font-size:12px;wi
     <section class="view" id="v-src"><div id="srcs"></div></section>
   </main>
 </div>
-<script>window.PHILO_STATIC=true;window.PHILO_API_BASE="https://lecture-agent-api-taupe.vercel.app";window.PHILO_ASSET="";window.PHILO_SLIDES="slides/";</script>
+<script>window.PHILO_STATIC=true;window.PHILO_API_BASE="";window.PHILO_ASSET="";window.PHILO_SLIDES="slides/";</script>
 <script>
 const $=s=>document.querySelector(s);
 // 정적 사이트(GitHub Pages 등, export_static.py)에서는 /api/... 대신 data/*.json 을 읽는다. 대화·새 분석은 서버 전용.
@@ -263,15 +263,17 @@ function api(path,opt){
 }
 // 이용 통계(공개 사이트에서만): 브라우저가 만든 무작위 ID + 방문·탭 기록. 이름·질문 내용은 보내지 않는다.
 window.philoVid=()=>{try{let v=localStorage.getItem("philo-vid");if(!v){v=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem("philo-vid",v);}return v;}catch(e){return "";}};
+// 교수자 제외: 주소 끝에 ?staff=1 로 한 번 열면 이 브라우저는 방문·질문·별점 집계에서 빠진다(?staff=0 으로 해제).
+window.philoStaff=()=>{try{const q=new URLSearchParams(location.search).get("staff");if(q==="1")localStorage.setItem("philo-staff","1");if(q==="0")localStorage.removeItem("philo-staff");return localStorage.getItem("philo-staff")==="1";}catch(e){return false;}};
 // 오늘/누적 방문자·질문 수(학생에게도 보임)
 window.refreshCounts=()=>{ if(!window.PHILO_API_BASE) return;
   fetch(window.PHILO_API_BASE.replace(/\/$/,"")+"/api/counts").then(r=>r.json()).then(c=>{ if(!c.enabled) return;
     const el=document.getElementById("counts"); el.hidden=false;
-    el.innerHTML=`<span>오늘 방문 <b>${c.today_visitors}</b> · 누적 <b>${c.total_visitors}</b></span><span>오늘 질문 <b>${c.today_questions}</b> · 누적 <b>${c.total_questions}</b></span>`;
+    el.innerHTML=`<span>오늘 방문 <b>${c.today_visitors}</b> · 누적 <b>${c.total_visitors}</b></span><span>오늘 질문 <b>${c.today_questions}</b> · 누적 <b>${c.total_questions}</b></span>`+(philoStaff()?`<span title="이 브라우저는 집계에서 빠짐(?staff=0 으로 해제)">· 교수자</span>`:"");
   }).catch(()=>{}); };
 function hit(tab,first){ if(!window.PHILO_API_BASE) return;
   fetch(window.PHILO_API_BASE.replace(/\/$/,"")+"/api/hit",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({vid:philoVid(),tab,first}),keepalive:true}).catch(()=>{}); }
+    body:JSON.stringify({vid:philoVid(),tab,first,staff:philoStaff()}),keepalive:true}).catch(()=>{}); }
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const para=s=>esc(s).split(/\n{2,}/).map(p=>`<p style="margin:0 0 8px">${p.replace(/\n/g,"<br>")}</p>`).join("");
 let course=null, mode="tutor", ph=null, history=[], tab="chat", sections=[], canAnalyze=false, curKey=null, network=null;

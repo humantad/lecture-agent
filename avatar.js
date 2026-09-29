@@ -232,7 +232,7 @@
           const s = +b.dataset.s; paint(s, "on"); msg.textContent = "저장 중…";
           try {
             const res = await fetch(window.PHILO_API_BASE.replace(/\/$/, "") + "/api/rate", { method: "POST", headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ rid: box.dataset.rid, stars: s, vid: window.philoVid ? window.philoVid() : "" }) });
+              body: JSON.stringify({ rid: box.dataset.rid, stars: s, vid: window.philoVid ? window.philoVid() : "", staff: !!(window.philoStaff && window.philoStaff()) }) });
             msg.textContent = res.ok ? `별 ${s}개 저장됨` : "저장하지 못했습니다";
           } catch (e) { msg.textContent = "저장하지 못했습니다"; }
         };
@@ -257,7 +257,7 @@
       busy = true; const wait = add("…", "bot"); thinking(true);
       try {
         const send = () => opts.api("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: q, philosopher: pid, mode: "persona", history, section: opts.section(), code: classCode(), vid: window.philoVid ? window.philoVid() : "" }) });
+          body: JSON.stringify({ question: q, philosopher: pid, mode: "persona", history, section: opts.section(), code: classCode(), vid: window.philoVid ? window.philoVid() : "", staff: !!(window.philoStaff && window.philoStaff()) }) });
         let res = await send();
         if (res.status === 401) { classCode(true); res = await send(); } // 입장 코드가 틀리면 한 번 다시 묻는다
         const r = await res.json(); if (!res.ok) throw new Error(r.detail || res.status);
