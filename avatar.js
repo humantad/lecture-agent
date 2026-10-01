@@ -355,6 +355,41 @@
       u.onboundary = (e) => { if (e.name === "word") pulse(); };
       synth.speak(u);
     }
+    // ---------- 이스터에그: 서로 다른 답변 5개에 별점 → 학번 입력창(가산점). 학번은 서버의 별도 저장소에만 ----------
+    const RATE_GOAL = 5;
+    const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
+    function easterEgg(rid) {
+      let rated = [];
+      try { rated = JSON.parse(ls("philo-rated") || "[]"); } catch (e) { rated = []; }
+      if (rid && !rated.includes(rid)) { rated.push(rid); ls("philo-rated", JSON.stringify(rated.slice(-50))); }
+      if (rated.length >= RATE_GOAL && ls("philo-sid-done") !== "1" && !document.querySelector(".egg")) sidDialog();
+    }
+    function sidDialog() {
+      const d = document.createElement("div"); d.className = "egg";
+      d.innerHTML = `<div class="egg-box" role="dialog" aria-label="이스터에그">
+        <div class="egg-t">🥚 Easter Egg 발견!</div>
+        <p>답변을 ${RATE_GOAL}번 평가해 주셨네요. 학번을 입력하면 가산점이 기록됩니다.</p>
+        <form><input inputmode="numeric" maxlength="10" placeholder="학번" autocomplete="off" required>
+        <button class="btn">저장</button></form>
+        <p class="egg-msg"></p><button class="egg-x" type="button" aria-label="닫기">나중에</button></div>`;
+      document.body.append(d);
+      const inp = d.querySelector("input"), m = d.querySelector(".egg-msg");
+      d.querySelector(".egg-x").onclick = () => d.remove();
+      inp.focus();
+      d.querySelector("form").onsubmit = async (e) => {
+        e.preventDefault(); m.textContent = "저장 중…";
+        try {
+          const res = await fetch(window.PHILO_API_BASE.replace(/\/$/, "") + "/api/sid", { method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sid: inp.value.trim(), vid: window.philoVid ? window.philoVid() : "", staff: !!(window.philoStaff && window.philoStaff()) }) });
+          const r = await res.json().catch(() => ({}));
+          if (!res.ok) { m.textContent = r.detail || "저장하지 못했습니다"; return; }
+          ls("philo-sid-done", "1");
+          d.querySelector(".egg-box").innerHTML = `<div class="egg-t">🎉</div><p class="egg-ok">${esc(r.message || "축하합니다. 열심히 답변을 평가하셨으므로 가산점을 지급합니다.")}</p><button class="btn egg-x" type="button">닫기</button>`;
+          d.querySelector(".egg-x").onclick = () => d.remove();
+        } catch (err) { m.textContent = "저장하지 못했습니다"; }
+      };
+    }
+
     function wireRating(box) {
       if (!box) return;
       const btns = [...box.querySelectorAll("button")], msg = box.querySelector(".rate-msg");
@@ -367,6 +402,7 @@
             const res = await fetch(window.PHILO_API_BASE.replace(/\/$/, "") + "/api/rate", { method: "POST", headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ rid: box.dataset.rid, stars: s, vid: window.philoVid ? window.philoVid() : "", staff: !!(window.philoStaff && window.philoStaff()) }) });
             msg.textContent = res.ok ? `별 ${s}개 저장됨` : "저장하지 못했습니다";
+            if (res.ok) easterEgg(box.dataset.rid);
           } catch (e) { msg.textContent = "저장하지 못했습니다"; }
         };
       });
