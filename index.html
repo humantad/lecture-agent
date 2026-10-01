@@ -319,12 +319,13 @@ const EXAMPLES={
   descartes:["코기토는 왜 확실한가요?","악령의 가설은 무엇을 의심하게 하나요?","심신이원론의 문제는 무엇인가요?"],
   spinoza:["신 즉 자연이란 무슨 뜻인가요?","코나투스와 정서는 어떤 관계인가요?","결정론인데 어떻게 자유가 가능한가요?"],
 };
+const examples=()=>course.ui?.examples||EXAMPLES; // 과목 설정(course.json ui.examples)이 있으면 그것을 쓴다
 function welcome(){
   const p=course.philosophers.find(x=>x.id===ph);
   const who=mode==="persona"&&p?.persona?`${p.name}와(과) 대화합니다.`:"수업 자료를 바탕으로 해설합니다.";
   $("#log").innerHTML=`<div class="welcome"><h2>${esc(p?p.name:"전체 범위")}</h2>
   <p>${who} 답변은 이번 학기 슬라이드에 근거하며, <b>수업 내용을 벗어나는 질문에는 그렇다는 안내가 붙습니다.</b></p>
-  <div class="chips">${(EXAMPLES[ph]||EXAMPLES.null).map(e=>`<button>${esc(e)}</button>`).join("")}</div></div>`;
+  <div class="chips">${(examples()[ph]||examples().null||[]).map(e=>`<button>${esc(e)}</button>`).join("")}</div></div>`;
   $("#log").querySelectorAll(".chips button").forEach(b=>b.onclick=()=>ask(b.textContent));
 }
 function add(html,cls){const d=document.createElement("div");d.className="msg";d.innerHTML=`<div class="${cls}">${html}</div>`;$("#log").append(d);d.scrollIntoView({behavior:"smooth",block:"end"});return d;}
@@ -373,7 +374,7 @@ function openDefault(){
 }
 function renderSecs(){
   const list=sections.filter(s=>!ph||s.philosophers.includes(ph));
-  let wk=null, html=`<button class="ph sec cmp ${curKey==="cmp"?"on":""}" data-k="cmp"><span><b>⚖ 데카르트 ↔ 스피노자</b><br><small>같은 개념, 다른 설명</small></span></button>`;
+  let wk=null, html=course.compare?`<button class="ph sec cmp ${curKey==="cmp"?"on":""}" data-k="cmp"><span><b>⚖ ${esc(phName(course.compare[0]))} ↔ ${esc(phName(course.compare[1]))}</b><br><small>같은 개념, 다른 설명</small></span></button>`:"";
   for(const s of list){
     if(s.week!==wk){wk=s.week; const k=`w${String(wk).padStart(2,"0")}`;
       html+=`<div class="label" style="margin-top:8px">${wk}주</div><button class="ph sec ${k===curKey?"on":""}" data-k="${k}"><span><b>${wk}주 전체</b></span><small></small></button>`;}
@@ -389,7 +390,7 @@ function avatarFor(week){
     name:id=>phName(id)||id, section:()=>curKey&&curKey.includes("-s")?curKey:null, quotesFor:quotesOf,
     portraitBase:window.PHILO_ASSET!=null?window.PHILO_ASSET+"portraits/":"/static/portraits/"});
   const id=week==null?ph:phOfWeek(week); if(!id) return;
-  avatar.setPhilosopher(id,course.philosophers.find(p=>p.id===id)?.era);
+  {const p=course.philosophers.find(p=>p.id===id); avatar.setPhilosopher(id,p?.era,p?.portrait_credit);}
 }
 async function quotesOf(id){ // 수업 슬라이드에 인용된 그 철학자의 문장(“…”)
   if(!srcData) srcData=await (await api("/api/sources")).json();
@@ -632,7 +633,7 @@ function renderSources(){
 
 // ---------- 시작 ----------
 api("/api/course").then(r=>r.json()).then(c=>{
-  course=c; ph=c.philosophers.find(p=>p.persona)?.id||null; $("#ctitle").textContent=c.title; $("#csub").textContent=`${c.semester} · 학습 도우미 · 이번 학기 슬라이드 기반`;
+  course=c; ph=c.philosophers.find(p=>p.persona)?.id||null; $("#ctitle").textContent=c.title; document.title=`${c.title} · 학습 도우미`; $("#csub").textContent=`${c.semester} · 학습 도우미 · 이번 학기 슬라이드 기반`;
   $("#llm").textContent=STATIC?"":c.llm?"":"⚠ LLM 미연결 — 자료 검색과 저장된 분석만 동작";
   renderPhs(); welcome(); setTimeout(refreshCounts,1500); hit(location.hash.slice(1).split("/")[0]||"ana",true);
   if(STATIC){ $("#tabs").querySelector('[data-t="chat"]').remove(); if(!location.hash) location.hash="ana"; }

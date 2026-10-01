@@ -70,7 +70,133 @@
       coat: "M14 240 C20 208 44 192 72 184 L128 184 C156 192 180 208 186 240 Z",
       voice: { pitch: 0.9, rate: 0.93 },
     },
+
+    // ---- 상명 정신과 윤리적 삶(2026-10-01) ----
+    // 피니어스 게이지 — 귀엽게: 둥근 큰 얼굴, 큰 눈, 짧은 검은 머리, 발그레한 뺨, 갈색 조끼와 흰 셔츠.
+    // 쇠막대(다짐대)가 왼뺨 아래로 들어가 정수리로 나간 사고를 머리 위로 비스듬히 솟은 막대 + 뺨의 반창고로.
+    gage: {
+      skin: ["#fbe3cc", "#f0c9a8", "#d49f7c"], cheek: "#f08a7a", hair: ["#2b1d14", "#3d2a1d", "#5a4030"], eye: "#3a2a1e",
+      face: "M54 106 C54 70 74 50 100 50 C126 50 146 70 146 106 C146 142 128 172 100 172 C72 172 54 142 54 106 Z",
+      hairBack: "M54 104 C50 72 70 44 100 42 C130 44 150 72 146 104 C142 88 134 78 124 74 L76 74 C66 78 58 88 54 104 Z",
+      hairFront: ["M56 100 C54 66 76 46 102 46 C128 46 146 64 146 94 C138 78 126 70 112 68 C98 66 84 72 72 82 C64 88 59 94 56 100 Z",
+                  "M72 82 C78 70 86 64 96 62 C90 68 86 74 84 80 Z"],
+      waves: ["M80 60 C90 54 104 52 116 56", "M122 62 C130 66 136 72 140 80"], headScale: [0.84, 160],
+      brows: ["M76 88 C81 84 87 84 92 86", "M108 86 C113 84 119 84 124 88"], browW: 3.4,
+      eyes: { lx: 84, rx: 116, y: 106, rw: 10, rh: 9, iris: 7.2, heavy: false },
+      nose: "M98 118 C97 124 96 128 96 131 C97 134 103 134 104 131 C104 128 103 124 102 118",
+      nostrils: [[97.5, 131], [102.5, 131]], noseTip: [100, 129, 4],
+      moustache: "", moustacheEnds: [],
+      lips: { y: 146, w: 8, upper: "#c4554a", lower: "#e07a6c" }, smirk: -0.8,
+      tuft: "", lines: [],
+      collar: "M82 168 L118 168 L126 192 L100 200 L74 192 Z", collarLine: "M100 170 L100 199",
+      coat: "M16 240 C22 206 46 186 74 178 L126 178 C154 186 178 206 184 240 Z", cloth: ["#7a5232", "#4b2f1b"],
+      clothLines: ["M100 200 L100 240", "M88 214 L88 216", "M88 226 L88 228"], clothLineColor: "#e8c98f",
+      extra: (g) => `
+        <g class="av-rod">
+          <path d="M99 50 L80 -8 L90 -11 L109 47 Z" fill="url(#${g("rod")})" stroke="#4a4d52" stroke-width="1"/>
+          <ellipse cx="85" cy="-9.5" rx="5.2" ry="2.2" transform="rotate(-18 85 -9.5)" fill="#a3a9af" stroke="#4a4d52" stroke-width=".8"/>
+          <path d="M94 50 C99 45 107 44 113 48" stroke="#2b1d14" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M70 18 l2 -6 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 Z" fill="#f2c94c"/>
+        </g>
+        <g transform="rotate(-22 124 132)"><rect x="112" y="127" width="24" height="10" rx="4" fill="#f4dcb8" stroke="#d8b98e" stroke-width=".8"/>
+          <rect x="120" y="127" width="8" height="10" fill="#ead0a8"/></g>
+        <path d="M70 124 l3 -3 M73 124 l-3 -3" stroke="#e9a196" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>`,
+      voice: { pitch: 1.15, rate: 1.0 },
+    },
+    // 아리스토텔레스 — 리시포스 흉상 사본: 넓은 이마, 뒤로 물러난 짧은 곱슬머리, 짧고 단정한 수염,
+    // 곧은 코, 깊은 눈, 미간의 주름. 흰 키톤 위에 붉은 갈색 히마티온을 걸친 모습.
+    aristotle: {
+      skin: ["#eccaa8", "#d8a982", "#ae7a57"], cheek: "#cf8a72", hair: ["#4e4034", "#6e5c4c", "#8f7b68"], eye: "#3a2c22",
+      face: "M66 96 C66 68 82 54 100 54 C118 54 134 68 134 96 C135 124 130 150 120 166 C113 177 106 182 100 182 C94 182 87 177 80 166 C70 150 65 124 66 96 Z",
+      hairBack: "M60 118 C54 88 60 58 80 46 C92 40 108 40 120 46 C140 58 146 88 140 118 C138 100 134 88 128 82 L72 82 C66 88 62 100 60 118 Z",
+      curls: [[66, 74, 7], [74, 62, 7], [84, 54, 6.5], [116, 54, 6.5], [126, 62, 7], [134, 74, 7]],
+      hairFront: ["M70 84 C68 72 74 62 82 58 C80 66 78 74 78 82 Z", "M130 84 C132 72 126 62 118 58 C120 66 122 74 122 82 Z"],
+      waves: [],
+      brows: ["M72 92 C79 87 88 87 95 91", "M105 91 C112 87 121 87 128 92"], browW: 3.6,
+      eyes: { lx: 85, rx: 115, y: 104, rw: 8, rh: 3.6, iris: 3.4, heavy: true },
+      nose: "M97 96 C96 110 94 124 92 132 C90 138 94 142 100 142 C106 142 110 138 108 132 C106 124 104 110 103 96",
+      nostrils: [[95, 139], [105, 139]], noseTip: [100, 136, 5],
+      moustache: "M84 150 C89 144.5 95 145 100 147.5 C105 145 111 144.5 116 150 C111 151.5 106 150 100 151 C94 150 89 151.5 84 150 Z",
+      moustacheEnds: [],
+      beard: "M67 122 C66 146 72 168 86 182 C93 189 107 189 114 182 C128 168 134 146 133 122 C130 140 124 152 116 157 C110 161 106 165 100 165 C94 165 90 161 84 157 C76 152 70 140 67 122 Z",
+      beardCurls: [[78, 162, 4], [88, 172, 4], [100, 178, 4], [112, 172, 4], [122, 162, 4], [72, 148, 3.5], [128, 148, 3.5], [94, 182, 3], [106, 182, 3]],
+      lips: { y: 155, w: 9.5, upper: "#9a5446", lower: "#b06a5a" }, smirk: 0,
+      tuft: "", lines: ["M80 74 C92 71 108 71 120 74", "M84 80 C94 78 106 78 116 80", "M97 92 L98 97", "M103 92 L102 97", "M76 113 C79 116 82 117 86 117", "M124 113 C121 116 118 117 114 117"],
+      collar: "M76 184 L124 184 L130 200 L100 206 L70 200 Z", collarLine: "", collarFill: ["#f3eee2", "#d8d0bd"],
+      coat: "M10 240 C16 206 40 190 70 184 L130 184 C150 188 168 196 178 206 L120 240 Z", cloth: ["#a4573a", "#6e3524"],
+      clothLines: ["M150 196 L112 240", "M164 204 L132 240", "M40 206 C46 222 50 232 52 240"], clothLineColor: "#3a1a10",
+      extraBack: `<path d="M10 240 C14 214 30 198 52 190 L120 240 Z" fill="#efe8d8"/>`,
+      voice: { pitch: 0.85, rate: 0.95 },
+    },
+    // 흄 — 앨런 램지 1766: 크고 둥근 얼굴, 이중 턱, 둥근 큰 눈과 올라간 눈썹, 도톰한 입술,
+    // 분 바른 회백색 머리(옆 말림), 금줄 장식의 붉은 외투, 흰 크라바트.
+    hume: {
+      skin: ["#f6dcc4", "#e8bd9c", "#c69274"], cheek: "#e6907c", hair: ["#bdb7ad", "#d8d3ca", "#9e978b"], eye: "#4a3a2c",
+      face: "M58 98 C58 64 78 50 100 50 C122 50 142 64 142 98 C143 130 138 154 127 170 C119 182 109 188 100 188 C91 188 81 182 73 170 C62 154 57 130 58 98 Z",
+      hairBack: "M52 132 C46 96 54 60 76 46 C90 38 110 38 124 46 C146 60 154 96 148 132 C146 112 142 96 136 86 L64 86 C58 96 54 112 52 132 Z",
+      curls: [[56, 112, 9], [56, 130, 9], [144, 112, 9], [144, 130, 9]],
+      hairFront: ["M64 86 C64 66 80 52 100 50 C88 58 80 70 76 86 Z", "M136 86 C136 66 120 52 100 50 C112 58 120 70 124 86 Z"],
+      waves: ["M50 108 C58 104 62 110 60 116", "M50 126 C58 122 62 128 60 134", "M150 108 C142 104 138 110 140 116", "M150 126 C142 122 138 128 140 134"],
+      brows: ["M70 88 C77 81 87 80 94 84", "M106 84 C113 80 123 81 130 88"], browW: 2.8,
+      eyes: { lx: 84, rx: 116, y: 102, rw: 9.6, rh: 5.6, iris: 4.8, heavy: false },
+      nose: "M97 100 C96 112 94 122 93 130 C91 137 95 141 100 141 C105 141 109 137 107 130 C106 122 104 112 103 100",
+      nostrils: [[95, 137], [105, 137]], noseTip: [100, 134, 6],
+      moustache: "", moustacheEnds: [],
+      lips: { y: 154, w: 11, upper: "#b5584c", lower: "#d47a6c" }, smirk: 0.3,
+      tuft: "", lines: ["M86 176 C94 182 106 182 114 176", "M80 170 C90 177 110 177 120 170", "M72 116 C76 120 80 121 85 121", "M128 116 C124 120 120 121 115 121", "M84 144 C82 150 82 156 84 162", "M116 144 C118 150 118 156 116 162"],
+      collar: "M82 184 C90 190 110 190 118 184 L124 202 C116 214 84 214 76 202 Z", collarLine: "M100 190 C96 198 104 204 100 212",
+      coat: "M8 240 C14 204 40 188 70 184 L130 184 C160 188 186 204 192 240 Z", cloth: ["#a8322a", "#641a15"],
+      clothLines: ["M72 186 C66 206 62 222 60 240", "M128 186 C134 206 138 222 140 240"], clothLineColor: "#e2b64c",
+      voice: { pitch: 0.95, rate: 0.96 },
+    },
+    // 에피쿠로스 — 흉상 사본: 길고 숱 많은 곱슬 수염(가슴까지), 이마의 깊은 주름, 뒤로 물러난 머리,
+    // 가라앉은 듯 평온한 눈. 흰 키톤.
+    epicurus: {
+      skin: ["#ebc9a8", "#d6a682", "#ab7756"], cheek: "#c9846c", hair: ["#57493d", "#76675a", "#968776"], eye: "#3a2c22",
+      face: "M67 96 C67 66 82 52 100 52 C118 52 133 66 133 96 C134 122 129 146 120 162 C113 174 106 179 100 179 C94 179 87 174 80 162 C71 146 66 122 67 96 Z",
+      hairBack: "M56 140 C48 104 54 64 76 48 C88 40 112 40 124 48 C146 64 152 104 144 140 C142 116 138 98 132 88 L68 88 C62 98 58 116 56 140 Z",
+      curls: [[62, 96, 7], [60, 112, 7], [60, 128, 7], [138, 96, 7], [140, 112, 7], [140, 128, 7], [68, 78, 6], [132, 78, 6]],
+      hairFront: ["M72 88 C70 74 76 64 84 60 C82 70 80 80 80 88 Z", "M128 88 C130 74 124 64 116 60 C118 70 120 80 120 88 Z"],
+      waves: [],
+      brows: ["M72 92 C79 88 88 88 95 92", "M105 92 C112 88 121 88 128 92"], browW: 3.4,
+      eyes: { lx: 85, rx: 115, y: 104, rw: 8.2, rh: 3.4, iris: 3.4, heavy: true },
+      nose: "M97 96 C96 110 94 122 92 130 C90 137 94 141 100 141 C106 141 110 137 108 130 C106 122 104 110 103 96",
+      nostrils: [[95, 138], [105, 138]], noseTip: [100, 135, 5],
+      moustache: "M82 149 C88 143 95 144 100 146.5 C105 144 112 143 118 149 C113 152 106 150 100 151 C94 150 87 152 82 149 Z",
+      moustacheEnds: [],
+      beard: "M66 118 C62 150 68 184 80 206 C88 220 112 220 120 206 C132 184 138 150 134 118 C131 138 124 152 116 157 C110 161 106 165 100 165 C94 165 90 161 84 157 C76 152 69 138 66 118 Z",
+      beardCurls: [[78, 166, 4.5], [90, 176, 4.5], [102, 182, 4.5], [114, 174, 4.5], [124, 162, 4.5], [72, 182, 4], [84, 194, 4.5], [98, 200, 4.5], [112, 194, 4.5], [126, 182, 4], [92, 210, 4], [106, 210, 4], [70, 146, 3.5], [130, 146, 3.5]],
+      lips: { y: 155, w: 9, upper: "#94523f", lower: "#a8634f" }, smirk: 0,
+      tuft: "", lines: ["M78 68 C92 64 108 64 122 68", "M80 74 C92 71 108 71 120 74", "M83 80 C93 78 107 78 117 80", "M98 92 L99 97", "M102 92 L101 97", "M75 112 C78 116 82 118 87 118", "M125 112 C122 116 118 118 113 118"],
+      collar: "", collarLine: "",
+      coat: "M10 240 C16 206 40 190 70 184 L130 184 C160 190 184 206 190 240 Z", cloth: ["#eee6d4", "#c9bea6"],
+      clothLines: ["M60 196 C70 214 76 228 78 240", "M140 196 C130 214 124 228 122 240", "M150 204 C142 220 138 232 136 240"], clothLineColor: "#7d7260",
+      voice: { pitch: 0.82, rate: 0.9 },
+    },
+    // 버틀러 — 18세기 주교 초상: 갸름한 얼굴, 어깨까지 오는 흰 가발(옆 말림), 맑은 눈,
+    // 검은 사제복과 흰 설교용 띠(밴드).
+    butler: {
+      skin: ["#f4dcc6", "#e3bc9e", "#bf9174"], cheek: "#e09a86", hair: ["#d9d4cb", "#efebe4", "#aaa396"], eye: "#3e4a52",
+      face: "M70 98 C70 68 84 54 100 54 C116 54 130 68 130 98 C131 126 126 150 118 164 C112 175 106 180 100 180 C94 180 88 175 82 164 C74 150 69 126 70 98 Z",
+      hairBack: "M40 206 C28 166 32 116 42 84 C52 50 74 34 100 34 C126 34 148 50 158 84 C168 116 172 166 160 206 C150 216 136 210 134 194 C138 162 136 130 132 110 L68 110 C64 130 62 162 66 194 C64 210 50 216 40 206 Z",
+      curls: [[46, 118, 9], [44, 138, 9], [46, 158, 9], [50, 178, 9], [154, 118, 9], [156, 138, 9], [154, 158, 9], [150, 178, 9]],
+      hairFront: ["M100 40 C82 40 70 50 66 70 C64 82 66 96 68 108 C70 90 76 76 88 68 C94 62 98 54 100 46 Z",
+                  "M100 46 C102 54 106 62 112 68 C124 76 130 90 132 108 C134 96 136 82 134 70 C130 50 118 40 100 40 Z"],
+      waves: ["M76 56 C86 48 94 46 100 46", "M124 56 C114 48 106 46 100 46"],
+      brows: ["M74 92 C80 87 88 87 94 90", "M106 90 C112 87 120 87 126 92"], browW: 2.8,
+      eyes: { lx: 86, rx: 114, y: 104, rw: 8.4, rh: 4.4, iris: 3.9, heavy: false },
+      nose: "M98 98 C97 112 95 124 94 132 C92 138 96 142 100 142 C104 142 108 138 106 132 C105 124 103 112 102 98",
+      nostrils: [[95.5, 139], [104.5, 139]], noseTip: [100, 136, 5],
+      moustache: "", moustacheEnds: [],
+      lips: { y: 154, w: 9, upper: "#b0625a", lower: "#c87c70" }, smirk: 0.2,
+      tuft: "", lines: ["M78 114 C81 117 84 118 88 118", "M122 114 C119 117 116 118 112 118", "M88 144 C86 150 86 156 88 160", "M112 144 C114 150 114 156 112 160"],
+      collar: "M91 184 L99 184 L98 216 L90 214 Z M101 184 L109 184 L110 214 L102 216 Z", collarLine: "",
+      coat: "M12 240 C18 206 42 190 70 184 L130 184 C158 190 182 206 188 240 Z", cloth: ["#26262a", "#0c0c0e"],
+      voice: { pitch: 0.9, rate: 0.92 },
+    },
   };
+
+  const OLD_CREDIT = { descartes: "참고 초상: Frans Hals, 1649경 — 초상을 보고 그린 그림", spinoza: "참고 초상: 작자 미상, 1665경 — 초상을 보고 그린 그림" };
 
   function svg(id) {
     const f = FACES[id];
@@ -95,20 +221,23 @@
         <linearGradient id="${g("hair")}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${h2}"/><stop offset=".55" stop-color="${h1}"/><stop offset="1" stop-color="${h2}"/></linearGradient>
         <radialGradient id="${g("iris")}"><stop offset="0" stop-color="${f.eye}"/><stop offset="1" stop-color="#120c09"/></radialGradient>
         <radialGradient id="${g("cheek")}"><stop offset="0" stop-color="${f.cheek}" stop-opacity=".45"/><stop offset="1" stop-color="${f.cheek}" stop-opacity="0"/></radialGradient>
-        <linearGradient id="${g("coat")}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2926"/><stop offset="1" stop-color="#0f0e0d"/></linearGradient>
-        <linearGradient id="${g("collar")}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf9f4"/><stop offset="1" stop-color="#d9d4c8"/></linearGradient>
+        <linearGradient id="${g("coat")}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${(f.cloth || [])[0] || "#2b2926"}"/><stop offset="1" stop-color="${(f.cloth || [])[1] || "#0f0e0d"}"/></linearGradient>
+        <linearGradient id="${g("collar")}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${(f.collarFill || [])[0] || "#fbf9f4"}"/><stop offset="1" stop-color="${(f.collarFill || [])[1] || "#d9d4c8"}"/></linearGradient>
+        <linearGradient id="${g("rod")}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5d6166"/><stop offset=".45" stop-color="#c9ced3"/><stop offset="1" stop-color="#6f7378"/></linearGradient>
         <clipPath id="${g("clip")}"><circle cx="100" cy="120" r="100"/></clipPath>
       </defs>
       <g clip-path="url(#${g("clip")})">
       <rect width="200" height="240" fill="var(--av-bg)"/>
-      <g class="av-head">
+      <g class="av-head"><g ${f.headScale ? `transform="translate(100 ${f.headScale[1]}) scale(${f.headScale[0]}) translate(-100 -${f.headScale[1]})"` : ""}>
         <path d="${f.hairBack}" fill="url(#${g("hair")})"/>
         ${(f.curls || []).map(([x, yy, r]) => `<circle cx="${x}" cy="${yy}" r="${r}" fill="${h1}"/><path d="M${x - r * .6} ${yy} a${r * .6} ${r * .6} 0 1 1 ${r * .9} ${r * .4}" stroke="${h3}" stroke-width="1.6" fill="none" opacity=".55"/>`).join("")}
+        ${f.extraBack || ""}
         <path d="${f.coat}" fill="url(#${g("coat")})"/>
+        ${(f.clothLines || []).map((d) => `<path d="${d}" stroke="${f.clothLineColor || "#000"}" stroke-width="1.4" fill="none" opacity=".35" stroke-linecap="round"/>`).join("")}
         <path d="M86 160 L114 160 L116 188 L84 188 Z" fill="${s3}"/>
         <path d="M86 170 C95 176 105 176 114 170 L114 186 L86 186 Z" fill="#000" opacity=".18"/>
-        <path d="${f.collar}" fill="url(#${g("collar")})"/>
-        <path d="${f.collarLine}" stroke="#c9c3b6" stroke-width="1.1"/>
+        ${f.collar ? `<path d="${f.collar}" fill="url(#${g("collar")})"/>` : ""}
+        ${f.collarLine ? `<path d="${f.collarLine}" stroke="#c9c3b6" stroke-width="1.1"/>` : ""}
         <path d="${f.face}" fill="url(#${g("skin")})"/>
         <path d="${f.face}" fill="none" stroke="${s3}" stroke-width="1.2" opacity=".5"/>
         <ellipse cx="78" cy="130" rx="15" ry="11" fill="url(#${g("cheek")})"/>
@@ -126,6 +255,8 @@
         <circle cx="${f.noseTip[0] - 1.5}" cy="${f.noseTip[1] - 1.5}" r="${f.noseTip[2] * .4}" fill="${s1}" opacity=".8"/>
         ${f.nostrils.map(([x, yy]) => `<ellipse cx="${x}" cy="${yy}" rx="2.2" ry="1.3" fill="#3a221a" opacity=".7"/>`).join("")}
         <path d="M97 144 C98 147 102 147 103 144" stroke="${s3}" stroke-width="1" fill="none" opacity=".5"/>
+        ${f.beard ? `<path d="${f.beard}" fill="url(#${g("hair")})"/>` : ""}
+        ${(f.beardCurls || []).map(([x, yy, r]) => `<path d="M${x - r} ${yy} a${r} ${r} 0 1 1 ${r * 1.6} ${r * .6}" stroke="${h3}" stroke-width="1.5" fill="none" opacity=".6" stroke-linecap="round"/>`).join("")}
         <g class="av-mouth">
           <ellipse class="av-open" cx="100" cy="${y + 1}" rx="${hw - 2}" ry="0.6" fill="#2a0c09"/>
           <ellipse class="av-teeth" cx="100" cy="${y + 0.6}" rx="${hw - 4.5}" ry="1.3" fill="#e3d6c3" opacity="0"/>
@@ -138,7 +269,8 @@
         </g>
         ${f.moustache.endsWith("Z") ? `<path d="${f.moustache}" fill="${h1}"/>` : `<path d="${f.moustache}" stroke="${h1}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`}
         ${f.moustacheEnds.map((d) => `<path d="${d}" stroke="${h1}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`).join("")}
-      </g>
+        ${typeof f.extra === "function" ? f.extra(g) : f.extra || ""}
+      </g></g>
       </g>
       <circle class="av-ring" cx="100" cy="120" r="98" fill="none" stroke="var(--accent)" stroke-width="3" opacity="0"/>
     </svg>`;
@@ -173,6 +305,7 @@
     return c;
   }
 
+  window.PhiloAvatarSVG = svg; // 미리보기·점검용
   window.PhiloAvatar = function mount(root, opts) {
     // opts: { api(path, init), askable: bool, name(id), quotesFor(id)→[...], section()→key|null, portraitBase }
     let pid = null, history = [], voiceOn = false, speaking = false, busy = false, last = Date.now(), quotes = [];
@@ -292,11 +425,11 @@
     return {
       ask(text) { $("#avQ").value = text; $("#avForm").requestSubmit(); },
       prefill(text) { $("#avQ").value = text; $("#avQ").focus(); },
-      setPhilosopher(id, era) {
+      setPhilosopher(id, era, credit) {
         if (id === pid) return;
         pid = id; history = []; touch(); if (synth) synth.cancel(); setSpeaking(false);
         $("#avFace").innerHTML = svg(id);
-        $("#avCredit").textContent = FACES[id] ? `참고 초상: ${id === "descartes" ? "Frans Hals, 1649경" : "작자 미상, 1665경"} — 초상을 보고 그린 그림` : "";
+        $("#avCredit").textContent = credit || (FACES[id] && OLD_CREDIT[id]) || "";
         $("#avName").textContent = opts.name(id); $("#avEra").textContent = era || "";
         $("#avLog").innerHTML = `<div class="av-msg sys">${esc(opts.name(id))}에게 이 절의 내용을 물어보세요.${opts.askable ? "" : " (공개 사이트: 대화 서버 연결 전)"}</div>`;
         $("#avQ").placeholder = `${opts.name(id)}에게 질문하기`;
