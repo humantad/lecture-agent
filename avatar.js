@@ -22,6 +22,19 @@
     return out;
   }
 
+  // 공용 부품(철사문 2026-10-03): 안경 · 양복과 넥타이 · 표준 얼굴형
+  const GLASSES = (y = 105, r = 10, round = true, color = "#2b2b2b") => `
+    <g fill="none" stroke="${color}" stroke-width="2">
+      ${round ? `<circle cx="85" cy="${y}" r="${r}"/><circle cx="115" cy="${y}" r="${r}"/>`
+              : `<rect x="${85 - r}" y="${y - r * .7}" width="${r * 2}" height="${r * 1.4}" rx="3"/><rect x="${115 - r}" y="${y - r * .7}" width="${r * 2}" height="${r * 1.4}" rx="3"/>`}
+      <path d="M${85 + r} ${y} C96 ${y - 3} 104 ${y - 3} ${115 - r} ${y}"/><path d="M${85 - r} ${y - 1} L66 ${y - 4}"/><path d="M${115 + r} ${y - 1} L134 ${y - 4}"/></g>
+    <circle cx="82" cy="${y - 3}" r="${r * .35}" fill="#fff" opacity=".18"/><circle cx="112" cy="${y - 3}" r="${r * .35}" fill="#fff" opacity=".18"/>`;
+  const SUIT = { coat: "M10 240 C16 206 40 190 70 182 L84 182 L100 222 L116 182 L130 182 C160 190 184 206 190 240 Z",
+    collar: "M84 180 L100 196 L116 180 L118 194 L100 214 L82 194 Z", lines: ["M84 182 L98 226", "M116 182 L102 226"] };
+  const TIE = (c = "#5a2a2a") => `<path d="M96 196 L104 196 L106 202 L102 230 L98 230 L94 202 Z" fill="${c}"/><path d="M96 196 L104 196 L102 201 L98 201 Z" fill="${c}" opacity=".7"/>`;
+  const FACE_STD = "M64 100 C64 70 80 56 100 56 C120 56 136 70 136 100 C137 128 132 152 122 166 C115 176 107 181 100 181 C93 181 85 176 78 166 C68 152 63 128 64 100 Z";
+  const SKIN_LIGHT = ["#f3d8bf", "#e2b896", "#bf8f70"];
+
   const FACES = {
     // 데카르트 — 넓은 얼굴, 가운데 가르마의 어깨까지 오는 물결 머리, 무거운 눈꺼풀, 긴 코와 둥근 코끝,
     // 불그스름한 뺨, 아래로 처진 가는 콧수염, 아랫입술 밑 작은 수염, 흰 네모 깃, 검은 망토. 살짝 비꼬는 듯한 입매.
@@ -172,6 +185,191 @@
       coat: "M10 240 C16 206 40 190 70 184 L130 184 C160 190 184 206 190 240 Z", cloth: ["#eee6d4", "#c9bea6"],
       clothLines: ["M60 196 C70 214 76 228 78 240", "M140 196 C130 214 124 228 122 240", "M150 204 C142 220 138 232 136 240"], clothLineColor: "#7d7260",
       voice: { pitch: 0.82, rate: 0.9 },
+    },
+    // ---- 철학으로 읽는 사회와 문화(2026-10-03): 학자 11인 ----
+    // 공통 눈·코·입 위치(표준 얼굴형). 사람마다 머리·수염·안경·옷으로 구별한다.
+    arnold: { // 아놀드 — 옆 가르마의 검은 머리, 긴 구레나룻(턱은 면도), 빅토리아풍 검은 프록코트와 흰 깃·검은 넥타이
+      skin: SKIN_LIGHT, cheek: "#d98e7a", hair: ["#1f1915", "#3a2e26", "#5a4a3e"], eye: "#3b2c22", face: FACE_STD,
+      hairBack: "M58 120 C52 82 62 50 100 46 C138 50 148 82 142 120 C140 102 136 92 130 86 L70 86 C64 92 60 102 58 120 Z",
+      hairFront: ["M62 96 C62 68 80 52 104 52 C126 52 140 66 140 90 C130 78 116 72 98 74 C84 76 72 84 62 96 Z"],
+      waves: ["M80 64 C92 58 108 58 120 62"],
+      beard: "M64 108 C62 132 66 150 74 160 C78 150 78 132 76 116 Z M136 108 C138 132 134 150 126 160 C122 150 122 132 124 116 Z",
+      brows: ["M73 94 C80 89 88 89 94 92", "M106 92 C112 89 120 89 127 94"], browW: 3.6,
+      eyes: { lx: 85, rx: 115, y: 105, rw: 8, rh: 3.6, iris: 3.5, heavy: true },
+      nose: "M97 100 C96 113 94 124 93 131 C91 137 95 140 100 140 C105 140 109 137 107 131 C106 124 104 113 103 100",
+      nostrils: [[95, 137], [105, 137]], noseTip: [100, 134, 5], moustache: "", moustacheEnds: [],
+      lips: { y: 153, w: 9.5, upper: "#a85a4e", lower: "#c47464" }, smirk: 0.3, tuft: "",
+      lines: ["M76 113 C79 116 82 117 86 117", "M124 113 C121 116 118 117 114 117"],
+      collar: SUIT.collar, collarLine: "", coat: SUIT.coat, cloth: ["#26252a", "#0d0d10"], clothLines: SUIT.lines,
+      extra: () => TIE("#111"), voice: { pitch: 0.92, rate: 0.95 },
+    },
+    leavis: { // 리비스 — 마른 얼굴, 벗어진 이마와 뒤로 넘긴 회색 머리, 깃을 연 셔츠
+      skin: ["#f1d3b8", "#dcae8c", "#b78566"], cheek: "#d68a76", hair: ["#8b847b", "#a9a299", "#6c665f"], eye: "#3b2c22",
+      face: "M70 100 C70 70 84 58 100 58 C116 58 130 70 130 100 C131 128 126 152 118 166 C112 176 106 181 100 181 C94 181 88 176 82 166 C74 152 69 128 70 100 Z",
+      hairBack: "M62 122 C56 92 62 62 80 52 C90 48 110 48 120 52 C138 62 144 92 138 122 C136 104 134 94 130 90 L70 90 C66 94 64 104 62 122 Z",
+      hairFront: ["M66 108 C64 92 66 80 72 72 C72 86 72 98 74 108 Z", "M134 108 C136 92 134 80 128 72 C128 86 128 98 126 108 Z"],
+      waves: ["M70 90 C68 100 70 108 68 116", "M130 90 C132 100 130 108 132 116"],
+      brows: ["M74 95 C80 90 88 90 94 93", "M106 93 C112 90 120 90 126 95"], browW: 3,
+      eyes: { lx: 86, rx: 114, y: 106, rw: 7.6, rh: 3.6, iris: 3.4, heavy: true },
+      nose: "M98 100 C97 114 95 126 94 132 C92 138 96 141 100 141 C104 141 108 138 106 132 C105 126 103 114 102 100",
+      nostrils: [[95.5, 138], [104.5, 138]], noseTip: [100, 135, 4.5], moustache: "", moustacheEnds: [],
+      lips: { y: 154, w: 9, upper: "#a85a4e", lower: "#c47464" }, smirk: 0, tuft: "",
+      lines: ["M80 72 C92 69 108 69 120 72", "M82 78 C94 76 106 76 118 78", "M78 116 C81 119 84 120 88 120", "M122 116 C119 119 116 120 112 120", "M86 146 C84 152 84 158 86 162", "M114 146 C116 152 116 158 114 162"],
+      collar: "M82 180 L100 200 L118 180 L124 196 L100 214 L76 196 Z", collarLine: "M100 200 L100 214", collarFill: ["#f4f1ea", "#d9d4c6"],
+      coat: SUIT.coat, cloth: ["#5d5a52", "#3a3833"], clothLines: SUIT.lines, voice: { pitch: 0.9, rate: 0.95 },
+    },
+    elias: { // 엘리아스 — 벗어진 정수리와 흰 옆머리, 굵은 뿔테 안경, 양복과 넥타이
+      skin: SKIN_LIGHT, cheek: "#d98e7a", hair: ["#d6d2cb", "#ece9e3", "#b3ada3"], eye: "#3b2c22", face: FACE_STD,
+      hairBack: "M60 128 C56 104 60 92 66 86 L134 86 C140 92 144 104 140 128 C138 112 136 100 132 94 L68 94 C64 100 62 112 60 128 Z",
+      hairFront: ["M62 116 C60 100 64 88 70 82 C70 96 70 108 72 118 Z", "M138 116 C140 100 136 88 130 82 C130 96 130 108 128 118 Z"],
+      waves: [], brows: ["M73 92 C80 87 88 87 95 90", "M105 90 C112 87 120 87 127 92"], browW: 3.4,
+      eyes: { lx: 85, rx: 115, y: 106, rw: 7.6, rh: 3.6, iris: 3.4, heavy: false },
+      nose: "M97 100 C96 114 94 125 93 132 C91 138 95 141 100 141 C105 141 109 138 107 132 C106 125 104 114 103 100",
+      nostrils: [[95, 138], [105, 138]], noseTip: [100, 135, 5.5], moustache: "", moustacheEnds: [],
+      lips: { y: 154, w: 10, upper: "#a85a4e", lower: "#c47464" }, smirk: 0.4, tuft: "",
+      lines: ["M78 70 C92 66 108 66 122 70", "M80 77 C92 74 108 74 120 77", "M86 146 C84 152 84 158 86 163", "M114 146 C116 152 116 158 114 163"],
+      collar: SUIT.collar, collarLine: "", collarFill: ["#f4f1ea", "#d9d4c6"], coat: SUIT.coat, cloth: ["#3d3f46", "#1f2024"], clothLines: SUIT.lines,
+      extra: () => GLASSES(106, 11, false, "#1a1a1a") + TIE("#6b3b2a"), voice: { pitch: 0.85, rate: 0.9 },
+    },
+    hoggart: { // 호가트 — 물결치는 회색 머리, 가는 테 안경, 트위드 재킷과 넥타이
+      skin: SKIN_LIGHT, cheek: "#d98e7a", hair: ["#9a948b", "#b9b3aa", "#7a746c"], eye: "#3b2c22", face: FACE_STD,
+      hairBack: "M58 118 C52 84 62 48 100 44 C138 48 148 84 142 118 C140 100 136 90 130 84 L70 84 C64 90 60 100 58 118 Z",
+      hairFront: ["M62 98 C62 70 80 52 102 50 C126 50 140 66 140 92 C130 80 120 76 106 76 C90 76 74 84 62 98 Z"],
+      waves: ["M74 70 C84 62 96 60 108 62", "M108 62 C120 62 130 68 134 76", "M80 78 C92 72 104 72 116 74"],
+      brows: ["M73 94 C80 89 88 89 94 92", "M106 92 C112 89 120 89 127 94"], browW: 3.2,
+      eyes: { lx: 85, rx: 115, y: 106, rw: 7.6, rh: 3.6, iris: 3.4, heavy: false },
+      nose: "M97 100 C96 114 94 125 93 132 C91 138 95 141 100 141 C105 141 109 138 107 132 C106 125 104 114 103 100",
+      nostrils: [[95, 138], [105, 138]], noseTip: [100, 135, 5], moustache: "", moustacheEnds: [],
+      lips: { y: 154, w: 10, upper: "#a85a4e", lower: "#c47464" }, smirk: 0.6, tuft: "",
+      lines: ["M76 114 C79 117 82 118 86 118", "M124 114 C121 117 118 118 114 118", "M86 146 C84 152 84 158 86 162", "M114 146 C116 152 116 158 114 162"],
+      collar: SUIT.collar, collarLine: "", collarFill: ["#eef2f6", "#cfd6de"], coat: SUIT.coat, cloth: ["#6b5a44", "#45392a"], clothLines: SUIT.lines,
+      extra: () => GLASSES(106, 10, false, "#6b6b6b") + TIE("#2f4a6b"), voice: { pitch: 0.92, rate: 0.95 },
+    },
+    williams: { // 윌리엄스 — 넓은 얼굴, 숱 많은 짙은 물결 머리, 웃는 입, 트위드 재킷에 깃을 연 셔츠
+      skin: ["#f1d0b2", "#ddaa86", "#b88262"], cheek: "#d98e7a", hair: ["#2a2420", "#40362f", "#5c5047"], eye: "#3b2c22",
+      face: "M60 100 C60 70 78 56 100 56 C122 56 140 70 140 100 C141 128 135 152 124 166 C116 176 108 181 100 181 C92 181 84 176 76 166 C65 152 59 128 60 100 Z",
+      hairBack: "M54 120 C48 82 60 44 100 40 C140 44 152 82 146 120 C144 100 140 90 134 84 L66 84 C60 90 56 100 54 120 Z",
+      hairFront: ["M58 100 C56 68 78 46 104 46 C130 46 146 64 144 94 C136 80 124 72 108 72 C92 72 74 82 58 100 Z"],
+      waves: ["M70 66 C82 56 96 54 110 56", "M110 56 C124 58 134 66 140 76", "M76 76 C88 68 100 66 114 68"],
+      brows: ["M71 94 C78 88 87 88 94 91", "M106 91 C113 88 122 88 129 94"], browW: 4,
+      eyes: { lx: 85, rx: 115, y: 105, rw: 7.8, rh: 3.4, iris: 3.4, heavy: false },
+      nose: "M97 100 C96 113 94 124 93 131 C91 137 95 140 100 140 C105 140 109 137 107 131 C106 124 104 113 103 100",
+      nostrils: [[95, 137], [105, 137]], noseTip: [100, 134, 5.5], moustache: "", moustacheEnds: [],
+      lips: { y: 153, w: 11, upper: "#a85a4e", lower: "#c47464" }, smirk: -1, tuft: "",
+      lines: ["M74 112 C77 116 81 118 86 118", "M126 112 C123 116 119 118 114 118", "M84 146 C86 151 88 153 91 154", "M116 146 C114 151 112 153 109 154"],
+      collar: "M82 180 L100 200 L118 180 L124 196 L100 214 L76 196 Z", collarLine: "M100 200 L100 214", collarFill: ["#e9edf1", "#c9d0d8"],
+      coat: SUIT.coat, cloth: ["#6e5b44", "#4a3c2c"], clothLines: SUIT.lines, voice: { pitch: 0.95, rate: 1.0 },
+    },
+    marx: { // 마르크스 — 사자 갈기 같은 흰머리와 풍성한 흰 수염(가슴까지), 검은 프록코트
+      skin: SKIN_LIGHT, cheek: "#d68a76", hair: ["#d8d4cc", "#efece6", "#a8a297"], eye: "#3b2c22", face: FACE_STD,
+      hairBack: "M40 150 C30 104 42 46 100 38 C158 46 170 104 160 150 C154 122 148 100 136 88 L64 88 C52 100 46 122 40 150 Z",
+      curls: [],
+      hairFront: ["M64 92 C66 72 82 60 100 58 C118 60 134 72 136 92 C126 80 114 76 100 76 C86 76 74 80 64 92 Z"],
+      waves: [], brows: ["M72 94 C79 88 88 88 95 92", "M105 92 C112 88 121 88 128 94"], browW: 4.2,
+      eyes: { lx: 85, rx: 115, y: 105, rw: 7.6, rh: 3.4, iris: 3.4, heavy: true },
+      nose: "M97 100 C96 113 94 124 93 131 C91 137 95 140 100 140 C105 140 109 137 107 131 C106 124 104 113 103 100",
+      nostrils: [[95, 137], [105, 137]], noseTip: [100, 134, 5.5],
+      moustache: "M78 150 C86 140 94 142 100 146 C106 142 114 140 122 150 C114 153 106 151 100 152 C94 151 86 153 78 150 Z", moustacheEnds: [],
+      beard: "M60 114 C52 150 58 196 76 220 C86 232 114 232 124 220 C142 196 148 150 140 114 C136 138 126 154 116 160 C110 164 106 166 100 166 C94 166 90 164 84 160 C74 154 64 138 60 114 Z",
+      beardCurls: [[74, 170, 5], [88, 182, 5], [102, 188, 5], [116, 180, 5], [128, 168, 5], [70, 192, 5], [84, 204, 5], [100, 210, 5], [116, 204, 5], [130, 190, 5], [92, 222, 4.5], [108, 222, 4.5], [64, 150, 4], [136, 150, 4]],
+      lips: { y: 156, w: 8, upper: "#a85a4e", lower: "#c47464" }, smirk: 0, tuft: "",
+      lines: ["M78 72 C92 68 108 68 122 72", "M80 79 C92 76 108 76 120 79", "M75 113 C78 116 82 117 86 117", "M125 113 C122 116 118 117 114 117"],
+      collar: "", collarLine: "", coat: "M8 240 C14 206 40 190 70 184 L130 184 C160 190 186 206 192 240 Z", cloth: ["#232226", "#0b0b0d"], voice: { pitch: 0.82, rate: 0.92 },
+    },
+    gramsci: { // 그람시 — 숱 많은 검은 곱슬머리, 동그란 안경, 작은 얼굴, 양복과 넥타이
+      skin: ["#efd0b4", "#dbab88", "#b78464"], cheek: "#d68a76", hair: ["#141110", "#2a2420", "#3e3630"], eye: "#2a1f18", face: FACE_STD,
+      hairBack: "M50 130 C40 84 56 40 100 34 C144 40 160 84 150 130 C146 106 140 92 132 84 L68 84 C60 92 54 106 50 130 Z",
+      curls: [[64, 70, 9], [80, 54, 10], [100, 48, 10], [120, 54, 10], [136, 70, 9], [60, 92, 8], [140, 92, 8]],
+      hairFront: ["M64 90 C66 70 82 58 100 56 C118 58 134 70 136 90 C126 80 114 76 100 76 C86 76 74 80 64 90 Z"],
+      waves: [], brows: ["M73 94 C80 89 88 89 94 92", "M106 92 C112 89 120 89 127 94"], browW: 3.6,
+      eyes: { lx: 85, rx: 115, y: 106, rw: 7, rh: 3.6, iris: 3.4, heavy: false },
+      nose: "M98 100 C97 114 95 125 94 132 C92 138 96 141 100 141 C104 141 108 138 106 132 C105 125 103 114 102 100",
+      nostrils: [[95.5, 138], [104.5, 138]], noseTip: [100, 135, 5], moustache: "", moustacheEnds: [],
+      lips: { y: 154, w: 9, upper: "#a85a4e", lower: "#c47464" }, smirk: 0, tuft: "",
+      lines: ["M77 115 C80 118 83 119 87 119", "M123 115 C120 118 117 119 113 119"],
+      collar: SUIT.collar, collarLine: "", coat: SUIT.coat, cloth: ["#2d2e33", "#151619"], clothLines: SUIT.lines,
+      extra: () => GLASSES(106, 10.5, true, "#222") + TIE("#3a3a40"), voice: { pitch: 0.98, rate: 1.0 },
+    },
+    althusser: { // 알튀세 — 벗어진 이마, 뒤로 넘긴 짧은 회흑색 머리, 굵은 뿔테 안경, 검은 양복
+      skin: SKIN_LIGHT, cheek: "#d68a76", hair: ["#3e3a36", "#5a5550", "#76716b"], eye: "#2a1f18", face: FACE_STD,
+      hairBack: "M58 120 C52 90 60 62 78 54 C90 50 110 50 122 54 C140 62 148 90 142 120 C140 102 136 92 132 88 L68 88 C64 92 60 102 58 120 Z",
+      hairFront: ["M62 104 C60 88 64 76 72 70 C70 84 70 96 72 106 Z", "M138 104 C140 88 136 76 128 70 C130 84 130 96 128 106 Z"],
+      waves: ["M80 60 C92 56 108 56 120 60"], brows: ["M72 94 C79 88 88 88 95 91", "M105 91 C112 88 121 88 128 94"], browW: 4,
+      eyes: { lx: 85, rx: 115, y: 106, rw: 7.4, rh: 3.4, iris: 3.4, heavy: true },
+      nose: "M97 100 C96 114 94 125 93 132 C91 138 95 141 100 141 C105 141 109 138 107 132 C106 125 104 114 103 100",
+      nostrils: [[95, 138], [105, 138]], noseTip: [100, 135, 5.5], moustache: "", moustacheEnds: [],
+      lips: { y: 154, w: 9.5, upper: "#a85a4e", lower: "#c47464" }, smirk: 0.5, tuft: "",
+      lines: ["M78 72 C92 68 108 68 122 72", "M86 146 C84 152 84 158 86 162", "M114 146 C116 152 116 158 114 162"],
+      collar: SUIT.collar, collarLine: "", coat: SUIT.coat, cloth: ["#1f2024", "#0b0b0d"], clothLines: SUIT.lines,
+      extra: () => GLASSES(106, 11, false, "#111") + TIE("#1a1a1a"), voice: { pitch: 0.9, rate: 0.95 },
+    },
+    adorno: { // 아도르노 — 둥근 얼굴, 벗어진 머리와 짧은 옆머리, 짙고 둥근 눈썹, 양복과 넥타이
+      skin: SKIN_LIGHT, cheek: "#d68a76", hair: ["#2c2622", "#463c35", "#625750"], eye: "#2a1f18",
+      face: "M58 102 C58 70 78 54 100 54 C122 54 142 70 142 102 C143 130 136 154 124 168 C116 178 108 183 100 183 C92 183 84 178 76 168 C64 154 57 130 58 102 Z",
+      hairBack: "M56 128 C52 104 56 92 62 86 L138 86 C144 92 148 104 144 128 C142 112 140 100 136 94 L64 94 C60 100 58 112 56 128 Z",
+      hairFront: ["M58 114 C56 98 60 88 66 82 C66 96 66 106 68 116 Z", "M142 114 C144 98 140 88 134 82 C134 96 134 106 132 116 Z"],
+      waves: [], brows: ["M70 92 C77 84 87 84 95 89", "M105 89 C113 84 123 84 130 92"], browW: 4.6,
+      eyes: { lx: 85, rx: 115, y: 106, rw: 8.4, rh: 4.4, iris: 4, heavy: true },
+      nose: "M97 100 C96 114 94 125 93 132 C91 138 95 141 100 141 C105 141 109 138 107 132 C106 125 104 114 103 100",
+      nostrils: [[95, 138], [105, 138]], noseTip: [100, 135, 6], moustache: "", moustacheEnds: [],
+      lips: { y: 155, w: 10, upper: "#a85a4e", lower: "#c47464" }, smirk: 0, tuft: "",
+      lines: ["M76 70 C92 66 108 66 124 70", "M84 148 C82 154 82 160 84 165", "M116 148 C118 154 118 160 116 165"],
+      collar: SUIT.collar, collarLine: "", coat: SUIT.coat, cloth: ["#34363c", "#17181b"], clothLines: SUIT.lines,
+      extra: () => TIE("#4a2a3a"), voice: { pitch: 0.88, rate: 0.95 },
+    },
+    freud: { // 프로이트 — 벗어진 이마의 짧은 흰머리, 짧게 다듬은 흰 수염, 날카로운 눈, 양복과 나비넥타이
+      skin: SKIN_LIGHT, cheek: "#d68a76", hair: ["#cfcac2", "#e6e2dc", "#a29c92"], eye: "#2a1f18", face: FACE_STD,
+      hairBack: "M60 120 C54 92 62 64 80 56 C90 52 110 52 120 56 C138 64 146 92 140 120 C138 104 134 94 130 90 L70 90 C66 94 62 104 60 120 Z",
+      hairFront: ["M64 106 C62 90 66 78 72 72 C72 86 72 98 74 108 Z", "M136 106 C138 90 134 78 128 72 C128 86 128 98 126 108 Z"],
+      waves: [], brows: ["M73 94 C80 88 88 88 95 91", "M105 91 C112 88 120 88 127 94"], browW: 3.4,
+      eyes: { lx: 85, rx: 115, y: 106, rw: 7.6, rh: 3.6, iris: 3.4, heavy: true },
+      nose: "M97 100 C96 114 94 125 93 132 C91 138 95 141 100 141 C105 141 109 138 107 132 C106 125 104 114 103 100",
+      nostrils: [[95, 138], [105, 138]], noseTip: [100, 135, 5.5],
+      moustache: "M82 149 C88 143 95 144 100 146.5 C105 144 112 143 118 149 C113 152 106 150 100 151 C94 150 87 152 82 149 Z", moustacheEnds: [],
+      beard: "M66 124 C64 150 72 174 86 186 C94 192 106 192 114 186 C128 174 136 150 134 124 C130 142 122 154 114 158 C108 162 104 164 100 164 C96 164 92 162 86 158 C78 154 70 142 66 124 Z",
+      beardCurls: [[80, 168, 3.5], [92, 178, 3.5], [104, 180, 3.5], [116, 172, 3.5], [124, 160, 3.5]],
+      lips: { y: 155, w: 9, upper: "#a85a4e", lower: "#c47464" }, smirk: 0, tuft: "",
+      lines: ["M78 72 C92 68 108 68 122 72", "M80 78 C92 76 108 76 120 78", "M76 114 C79 117 82 118 86 118", "M124 114 C121 117 118 118 114 118"],
+      collar: SUIT.collar, collarLine: "", coat: SUIT.coat, cloth: ["#2b2c31", "#121316"], clothLines: SUIT.lines,
+      extra: () => `<path d="M90 196 L100 202 L110 196 L110 208 L100 203 L90 208 Z" fill="#1a1a1a"/>`, voice: { pitch: 0.86, rate: 0.92 },
+    },
+    jung: { // 융 — 짧은 흰머리, 둥근 금테 안경, 흰 콧수염, 양복과 넥타이, 온화한 표정
+      skin: ["#f2d4b8", "#deae8a", "#ba8666"], cheek: "#da8e78", hair: ["#d6d2cb", "#ece9e3", "#ada79d"], eye: "#3b2c22", face: FACE_STD,
+      hairBack: "M58 118 C52 86 62 54 100 50 C138 54 148 86 142 118 C140 100 136 90 130 86 L70 86 C64 90 60 100 58 118 Z",
+      hairFront: ["M62 100 C62 74 80 58 100 58 C120 58 138 72 138 96 C128 84 116 80 100 80 C86 80 72 86 62 100 Z"],
+      waves: ["M78 70 C90 64 106 64 120 68"], brows: ["M73 94 C80 89 88 89 94 92", "M106 92 C112 89 120 89 127 94"], browW: 3.2,
+      eyes: { lx: 85, rx: 115, y: 106, rw: 7.4, rh: 3.6, iris: 3.4, heavy: false },
+      nose: "M97 100 C96 114 94 125 93 132 C91 138 95 141 100 141 C105 141 109 138 107 132 C106 125 104 114 103 100",
+      nostrils: [[95, 138], [105, 138]], noseTip: [100, 135, 6],
+      moustache: "M84 149 C90 144 95 145 100 147 C105 145 110 144 116 149 C111 151 105 150 100 151 C95 150 89 151 84 149 Z", moustacheEnds: [],
+      lips: { y: 155, w: 9, upper: "#a85a4e", lower: "#c47464" }, smirk: -0.4, tuft: "",
+      lines: ["M76 114 C79 117 82 118 86 118", "M124 114 C121 117 118 118 114 118", "M86 146 C84 152 84 158 86 163", "M114 146 C116 152 116 158 114 163"],
+      collar: SUIT.collar, collarLine: "", coat: SUIT.coat, cloth: ["#4a4844", "#2a2926"], clothLines: SUIT.lines,
+      extra: () => GLASSES(106, 10, true, "#b08a3a") + TIE("#5b4a2a"), voice: { pitch: 0.9, rate: 0.93 },
+    },
+
+    // ---- 과학의 철학적 이해(2026-10-02): 담당 교수 한 사람 ----
+    // 이청호 교수 — 수업 화면(줌 카메라)을 보고: 숱 많은 짧은 검은 머리와 옆으로 넘긴 앞머리, 둥근 얼굴,
+    // 웃는 눈매, 깔끔한 면도, 짙은 회색 재킷에 흰 라운드 티셔츠.
+    lee: {
+      skin: ["#f6dcc2", "#e8c09e", "#c7957a"], cheek: "#e7a08c", hair: ["#141110", "#26201c", "#3a322c"], eye: "#2a1f18",
+      face: "M62 102 C62 72 80 58 100 58 C120 58 138 72 138 102 C139 128 134 150 124 164 C116 175 108 179 100 179 C92 179 84 175 76 164 C66 150 61 128 62 102 Z",
+      hairBack: "M54 118 C46 78 60 38 100 34 C140 38 154 78 146 118 C144 100 140 90 134 84 L66 84 C60 90 56 100 54 118 Z",
+      curls: [],
+      hairFront: ["M58 106 C54 66 76 38 104 38 C134 38 150 62 146 94 C140 80 130 74 116 74 C102 74 88 80 76 88 C68 94 62 100 58 106 Z",
+                  "M64 98 C70 84 84 76 100 74 C90 80 84 88 80 98 Z"],
+      waves: ["M78 70 C90 62 106 60 120 64", "M88 78 C98 72 110 70 122 72"],
+      brows: ["M74 95 C80 91 88 91 94 93", "M106 93 C112 91 120 91 126 95"], browW: 3.4,
+      eyes: { lx: 85, rx: 115, y: 106, rw: 7.6, rh: 3.4, iris: 3.3, heavy: false },
+      nose: "M98 104 C97 116 95 125 94 131 C93 136 96 139 100 139 C104 139 107 136 106 131 C105 125 103 116 102 104",
+      nostrils: [[95.5, 136], [104.5, 136]], noseTip: [100, 133, 5],
+      moustache: "", moustacheEnds: [],
+      lips: { y: 152, w: 10, upper: "#b8645a", lower: "#d0837a" }, smirk: -0.6,
+      tuft: "", lines: ["M77 112 C80 115 83 116 87 116", "M123 112 C120 115 117 116 113 116", "M86 146 C88 150 90 152 92 153", "M114 146 C112 150 110 152 108 153"],
+      collar: "M80 180 C90 191 110 191 120 180 L118 216 L82 216 Z", collarLine: "", collarFill: ["#ffffff", "#e9e7e3"],
+      coat: "M10 240 C16 206 40 190 70 182 L82 182 L100 214 L118 182 L130 182 C160 190 184 206 190 240 Z", cloth: ["#4a4d55", "#24262b"],
+      clothLines: ["M82 182 L98 226", "M118 182 L102 226", "M70 186 L84 222", "M130 186 L116 222"], clothLineColor: "#111214",
+      voice: { pitch: 1.0, rate: 1.0 },
     },
     // 버틀러 — 18세기 주교 초상: 갸름한 얼굴, 어깨까지 오는 흰 가발(옆 말림), 맑은 눈,
     // 검은 사제복과 흰 설교용 띠(밴드).
@@ -358,12 +556,20 @@
     // ---------- 이스터에그: 서로 다른 답변 5개에 별점 → 학번 입력창(가산점). 학번은 서버의 별도 저장소에만 ----------
     const RATE_GOAL = 5;
     const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
-    function easterEgg(rid) {
+    // 브라우저 기록(localStorage)과 서버의 평가 수 중 큰 쪽으로 판단한다 — 옛 탭·캐시·저장소 차단에도 뜨게(2026-10-03)
+    async function easterEgg(rid) {
+      if (ls("philo-sid-done") === "1" || document.querySelector(".egg")) return;
       let rated = [];
       try { rated = JSON.parse(ls("philo-rated") || "[]"); } catch (e) { rated = []; }
       if (rid && !rated.includes(rid)) { rated.push(rid); ls("philo-rated", JSON.stringify(rated.slice(-50))); }
-      if (rated.length >= RATE_GOAL && ls("philo-sid-done") !== "1" && !document.querySelector(".egg")) sidDialog();
+      let n = rated.length;
+      try {
+        const r = await fetch(window.PHILO_API_BASE.replace(/\/$/, "") + "/api/sid?vid=" + encodeURIComponent(window.philoVid ? window.philoVid() : ""), { cache: "no-store" });
+        if (r.ok) n = Math.max(n, (await r.json()).count || 0);
+      } catch (e) { /* 서버 확인 실패 시 브라우저 기록만 */ }
+      if (n >= RATE_GOAL && !document.querySelector(".egg")) sidDialog();
     }
+    if (window.PHILO_API_BASE) setTimeout(() => easterEgg(null), 2500); // 이미 다섯 번 넘게 평가한 학생은 열자마자
     function sidDialog() {
       const d = document.createElement("div"); d.className = "egg";
       d.innerHTML = `<div class="egg-box" role="dialog" aria-label="이스터에그">
