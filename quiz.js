@@ -147,7 +147,10 @@
       "  border:1px solid var(--line,#e3e0da);border-radius:9px;background:var(--panel,#fff);color:inherit;cursor:pointer}",
       ".qzoi .n{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:6px;",
       "  background:var(--line,#e3e0da);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}",
-      ".qzoi.on{border-color:var(--accent,#3d5a80)}.qzoi.on .n{background:var(--accent,#3d5a80);color:#fff}",
+      ".qzoi.on{color:#fff;border-color:transparent}",
+      ".qzoi.on .n{background:rgba(0,0,0,.25);color:#fff}",
+      ".qzoi.p0{background:#00a99d}.qzoi.p1{background:#2f80ed}.qzoi.p2{background:#f0a44a}",
+      ".qzoi.p3{background:#e4596a}.qzoi.p4{background:#8e6fd8}.qzoi.p5{background:#4a9d5b}",
       ".qzord.show .qzoi{cursor:default}.qzoi.done .n{background:#00a99d;color:#fff}",
       ".qzjoin button.ghost{background:transparent;color:var(--muted,#646b73);border:1px solid var(--line,#e3e0da)}",
       ".qzmute{border:0;background:transparent;font-size:16px;cursor:pointer;padding:0 4px}",
@@ -174,6 +177,7 @@
       ".qzres .word{font-size:21px;font-weight:700;margin-top:6px}",
       ".qzres .sub{font-size:14px;opacity:.95;margin-top:4px}",
       ".qzwin{margin-top:12px;padding:12px 14px;border-radius:10px;",
+      ".qzwin.done2{border-color:#00a99d;background:#e2f3ea;color:#0b6b52;font-weight:700;text-align:center}",
       "  border:1px solid var(--accent,#3d5a80);background:var(--me,#e8eef6);font-size:14px}"
     ].join("\n");
     document.head.appendChild(s);
@@ -252,7 +256,7 @@
 
   // 끝 화면 — 1~3위는 축하와 학번 칸, 나머지는 격려
   function endScreen(s) {
-    var win = s.me && s.me.r <= 3 && s.phase === "done";   // 마무리 단계에서는 학번 칸을 거둔다
+    var win = s.me && s.me.r <= 3;
     var h = '<div class="qzend ' + (win ? "win" : "soft") + '">' +
       '<div class="art">' + (win ? sm("win") : sm("soft")) + '</div>' +
       (win
@@ -264,7 +268,7 @@
       '</div>';
     if (win) {
       h += sidDone
-        ? '<div class="qzwin">학번을 받았습니다. 가산점 처리는 교수님이 하십니다.</div>'
+        ? '<div class="qzwin done2">완료했습니다 · 학번이 교수님께 전달됐습니다.</div>'
         : '<div class="qzwin">가산점을 받으려면 학번을 적어 주십시오.' +
           '<div class="qzjoin"><input id="qzWin" inputmode="numeric" maxlength="10" placeholder="학번" autocomplete="off">' +
           '<button id="qzWinGo">보내기</button></div>' +
@@ -332,7 +336,9 @@
             '<button id="qzSend">\ubcf4\ub0b4\uae30</button></div>';
       } else if (t === "order") {
         body += '<div class="qzord">' + s.q.a.map(function (a, i) {
-          return '<button class="qzoi" data-i="' + i + '"><span class="n">\u00b7</span>' + esc(a) + '</button>';
+          var at = order.indexOf(i);
+          return '<button class="qzoi' + (at >= 0 ? ' on p' + (at % 6) : '') + '" data-i="' + i + '">' +
+            '<span class="n">' + (at >= 0 ? (at + 1) : '\u00b7') + '</span>' + esc(a) + '</button>';
         }).join('') + '</div>' +
           (picked >= 0 ? '<div class="qzmsg">\ucc28\ub840\ub97c \ubcf4\ub0c8\uc2b5\ub2c8\ub2e4.</div>'
             : '<div class="qzjoin"><button id="qzSend">\uc774 \ucc28\ub840\ub85c \ubcf4\ub0b4\uae30</button>' +
@@ -349,7 +355,7 @@
     } else {
       // 정답이 공개된 뒤 — 학생에게는 본인이 맞았는지만 보인다.
       // 정답·보기별 분포·순위는 교수 화면에만 나간다.
-      if (s.phase === "done" || s.phase === "bye") { body += endScreen(s); }
+      if (s.phase === "done") { body += endScreen(s); }
       else {
       var okk = s.my ? s.my.ok : null;
       body += '<div class="qzres ' + (okk === null ? "none" : (okk ? "ok" : "bad")) + '">' +
@@ -361,7 +367,7 @@
         '</div>';
       if (s.phase === "done" && s.me && s.me.r <= 3) {
         body += sidDone
-          ? '<div class="qzwin"><b>' + MEDAL[s.me.r - 1] + ' ' + s.me.r + '등</b> \u00b7 학번을 받았습니다. 가산점 처리는 교수님이 하십니다.</div>'
+          ? '<div class="qzwin done2">완료했습니다 · 학번이 교수님께 전달됐습니다.</div>'
           : '<div class="qzwin"><b>' + MEDAL[s.me.r - 1] + ' ' + s.me.r + '등입니다!</b> 가산점을 받으려면 학번을 적어 주십시오.' +
             '<div class="qzjoin"><input id="qzWin" inputmode="numeric" maxlength="10" placeholder="학번" autocomplete="off">' +
             '<button id="qzWinGo">보내기</button></div>' +
@@ -401,10 +407,14 @@
       var m = document.getElementById("qzWinMsg");
       if (v.length < 6) { m.textContent = "\ud559\ubc88\uc740 \uc22b\uc790 6\uc790\ub9ac \uc774\uc0c1\uc785\ub2c8\ub2e4."; return; }
       wg.disabled = true;
+      m.textContent = "보내는 중…";
       post({ act: "sid", sid: v }).then(function (r) {
         wg.disabled = false;
-        if (r && r.ok) { sidDone = true; draw(); }
-        else m.textContent = (r && r.detail) || "\ubcf4\ub0b4\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4.";
+        if (r && r.ok) { sidDone = true; lastHtml = ""; draw(); }
+        else m.textContent = "보내지 못했습니다 · " + ((r && r.detail) || "알 수 없는 까닭");
+      }).catch(function () {
+        wg.disabled = false;
+        m.textContent = "서버에 닿지 못했습니다. 다시 눌러 주십시오.";
       });
     };
     var clr = document.getElementById("qzClr");
